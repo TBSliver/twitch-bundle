@@ -1,7 +1,7 @@
 import {RefreshableAuthProvider, StaticAuthProvider} from 'twitch-auth';
 import {NodeCG, Replicant} from '../../../../types/server';
 import {getTwitchAuthRouter} from "./router/twitch-auth";
-import {TwitchCredentials, TwitchPubSubListeners} from "./types";
+import {TwitchCredentials, TwitchEvent, TwitchPubSubListeners} from "./types";
 import {ApiClient} from "twitch";
 import {SingleUserPubSubClient} from 'twitch-pubsub-client';
 
@@ -17,9 +17,20 @@ function Bundle(nodecg: NodeCG) {
 			isConnected: false,
 		}
 	});
+	const twitchEvents: Replicant<TwitchEvent[]> = nodecg.Replicant('twitchEvents', {defaultValue: []});
+
 	let twitchClient;
 	let twitchPubSubClient;
 	let twitchPubSubListeners: TwitchPubSubListeners = {};
+
+	const addTwitchPubSubEvent = (messageName: string) => (data: any) => {
+		nodecg.log.info(`Received message ${messageName}`);
+		twitchEvents.value.unshift({type: 'PubSub', messageName, data: data._data.data});
+		nodecg.sendMessage(messageName, data._data.data);
+	};
+	const clearTwitchEvents = () => {
+		twitchEvents.value = []
+	};
 
 	const onTwitchAuthSuccess = async () => {
 		const {clientId, clientSecret, accessToken, refreshToken, expiryTimestamp} = twitchCredentials.value;
@@ -45,10 +56,10 @@ function Bundle(nodecg: NodeCG) {
 		});
 
 		twitchPubSubClient = new SingleUserPubSubClient({twitchClient});
-		twitchPubSubListeners.onBits = await twitchPubSubClient.onBits(message => nodecg.sendMessage('bits', message));
-		twitchPubSubListeners.onSubscription = await twitchPubSubClient.onSubscription(message => nodecg.sendMessage('subscription', message));
-		twitchPubSubListeners.onRedemption = await twitchPubSubClient.onRedemption(message => nodecg.sendMessage('redemption', message));
-		twitchPubSubListeners.onBitsBadgeUnlock = await twitchPubSubClient.onBitsBadgeUnlock(message => nodecg.sendMessage('bitsBadgeUnlock', message));
+		twitchPubSubListeners.onBits = await twitchPubSubClient.onBits(addTwitchPubSubEvent('bits'));
+		twitchPubSubListeners.onSubscription = await twitchPubSubClient.onSubscription(addTwitchPubSubEvent('subscription'));
+		twitchPubSubListeners.onRedemption = await twitchPubSubClient.onRedemption(addTwitchPubSubEvent('redemption'));
+		twitchPubSubListeners.onBitsBadgeUnlock = await twitchPubSubClient.onBitsBadgeUnlock(addTwitchPubSubEvent('bitsBadgeUnlock'));
 	}
 
 	const onTwitchAuthLogout = async () => {
@@ -67,6 +78,7 @@ function Bundle(nodecg: NodeCG) {
 	nodecg.mount(`/${nodecg.bundleName}`, twitchAuthRouter);
 
 	nodecg.listenFor('logoutTwitch', onTwitchAuthLogout);
+	nodecg.listenFor('clearTwitchEvents', clearTwitchEvents);
 
 	if (twitchCredentials.value.isConnected) onTwitchAuthSuccess().then(() => nodecg.log.info('Reconnected to Twitch'));
 }

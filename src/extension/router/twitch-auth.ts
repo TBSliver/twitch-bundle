@@ -12,12 +12,10 @@ export function getTwitchAuthRouter(nodecg: NodeCG, twitchCredentials: Replicant
 			.addSearch("client_id", twitchCredentials.value.clientId)
 			.addSearch("redirect_uri", getCallbackUrl(nodecg))
 			.addSearch("response_type", "code")
-			.addSearch("force_verify", "true");
+			.addSearch("force_verify", "true")
+			.addSearch("scope", "channel:read:subscriptions bits:read channel:read:redemptions channel_subscriptions");
 
-			// Done separately so it doesnt encode the +
-		const fullUri = uri.toString() + "&scope=channel:read:subscriptions+bits:read+channel:read:redemptions+channel_subscriptions";
-
-		res.redirect(fullUri);
+		res.redirect(uri.toString());
 	});
 
 	router.get('/callback', (req: any, res: any) => {

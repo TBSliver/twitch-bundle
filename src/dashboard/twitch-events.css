@@ -1,0 +1,108 @@
+.event-section {
+	width: 100%;
+	margin: 8px 0;
+}
+
+.pull-right {
+	float: right;
+}
+
+.event-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 8px 20px;
+}
+
+.event-header:hover {
+	background-color: rgba(100, 100, 100, .1);
+}
+
+.event-header-title {
+}
+
+.event-header-buttons {
+	text-align: right;
+	white-space: nowrap;
+}
+
+.event-header-buttons > div {
+	cursor: pointer;
+	display: inline-block;
+	margin-right: 6px;
+	border-radius: 6px;
+}
+
+.event-header-buttons > div:last-child {
+	margin-right: 0;
+}
+
+.event-header-buttons > div:hover {
+	background-color: rgba(100, 100, 100, .3);
+}
+
+.event-children {
+	padding: 8px 20px;
+	background-color: rgba(100, 100, 100, .1);
+}
+
+.data-section-name {
+	font-weight: bold;
+}
+
+.event-header-title > div {
+	display: inline-block;
+	border-radius: 6px;
+	padding: 3px 6px;
+	margin-right: 6px;
+}
+
+.event-header-title > .time {
+	background-color: cadetblue;
+}
+
+.event-header-title > .unknown {
+	background-color: darkslategray;
+}
+
+.event-header-title > .pub-sub {
+	background-color: darkslategray;
+}
+
+.event-header-title > .redemption {
+	background-color: teal;
+}
+
+.event-header-title > .bits {
+	background-color: darkred;
+}
+
+.event-header-title > .bits-badge {
+	background-color: chocolate;
+}
+
+.event-header-title > .subscription {
+	background-color: #6441a5;
+}
+
+.event-header-title > .user {
+	background-color: dimgray;
+}
+
+.action-buttons {
+	display: flex;
+	justify-content: space-between;
+}
+
+.action-buttons > .button > button {
+	cursor: pointer;
+	display: inline-block;
+	padding: 6px 12px;
+	margin-right: 6px;
+	border: none;
+	border-radius: 6px;
+}
+
+.action-buttons > .button > button:last-child {
+	margin-right: 0;
+}

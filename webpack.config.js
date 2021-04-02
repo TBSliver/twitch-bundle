@@ -62,7 +62,8 @@ const extensionConfig = {
 
 // Add more dashboard panel names here as needed
 const dashboardNames = [
-	'twitch-auth'
+	'twitch-auth',
+	'twitch-events',
 ];
 
 let dashboardEntries = {}, dashboardPlugins = [];
@@ -101,7 +102,7 @@ const dashboardConfig = {
 	resolve: {
 		extensions: ['.ts', '.tsx', '.js'],
 	},
-	mode: 'development'
+	mode: 'production'
 };
 
 module.exports = [
