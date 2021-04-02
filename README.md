@@ -21,7 +21,7 @@ To use this bundle, install NodeCG as per the usual instructions, then:
 cd bundles
 git clone https://github.com/TBSliver/twitch-bundle.git
 cd twitch-bundle
-npm install --dev
+npm install
 npm run build
 ```
 
