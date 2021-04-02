@@ -8,8 +8,8 @@ import {SingleUserPubSubClient} from 'twitch-pubsub-client';
 function Bundle(nodecg: NodeCG) {
 	const twitchCredentials: Replicant<TwitchCredentials> = nodecg.Replicant('twitchCredentials', {
 		defaultValue: {
-			clientId: undefined,
-			clientSecret: undefined,
+			clientId: '',
+			clientSecret: '',
 			accessToken: undefined,
 			refreshToken: undefined,
 			expiryTimestamp: undefined,
