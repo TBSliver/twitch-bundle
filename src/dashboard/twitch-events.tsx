@@ -74,11 +74,32 @@ function PubSubSubscriptionEvent({event}: PubSubSubscriptionEventProps) {
 		<EventSection
 			title={<>
 				<div className="subscription">Sub {isGift && 'Gift'}</div>
-				<div className="user">{event.data.display_name}</div>
+				<div className="user">
+					{event.data.context === 'subgift'
+						? `${event.data.recipient_display_name} -> ${event.data.display_name}`
+						: event.data.context === 'anonsubgift'
+							? event.data.recipient_display_name
+							: event.data.display_name}
+				</div>
 				{event.data.sub_plan_name}</>}
 			event={event}>
-			<DataSection name="User" value={event.data.display_name}/>
+			{event.data.context === 'subgift' && (
+				<>
+					<DataSection name="From" value={event.data.display_name}/>
+					<DataSection name="To" value={event.data.recipient_display_name}/>
+				</>
+			)}
+			{event.data.context === 'anonsubgift' && (
+				<>
+					<DataSection name="From" value={<i>Anonymous</i>}/>
+					<DataSection name="To" value={event.data.recipient_display_name}/>
+				</>
+			)}
+			{event.data.context === 'sub' || event.data.context === 'resub' && (
+				<DataSection name="User" value={event.data.display_name}/>
+			)}
 			<DataSection name="Level" value={event.data.sub_plan_name}/>
+			<DataSection name="Type" value={event.data.context}/>
 			<DataSection name="Timestamp" value={dayjs(event.data.time).format('ddd, MMM D, YYYY h:mm A')}/>
 			{event.data.context === 'sub' || event.data.context === 'resub' && (
 				<>
