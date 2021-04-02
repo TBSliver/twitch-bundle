@@ -6,7 +6,7 @@ const extensionConfig = {
 	target: "node",
 	entry: './src/extension/index.ts',
 	output: {
-		filename: 'index.ts',
+		filename: 'index.js',
 		path: path.join(__dirname, 'extension'),
 		libraryTarget: 'commonjs2'
 	},
@@ -20,7 +20,21 @@ const extensionConfig = {
 		rules: [
 			{
 				test: /\.ts$/,
-				use: 'ts-loader',
+				use: [
+					{
+						loader: 'babel-loader',
+						options: {
+							presets: [
+								[
+									'@babel/preset-env',
+									{modules: 'commonjs'}
+								]
+							],
+							plugins: ['add-module-exports']
+						}
+					},
+					'ts-loader',
+				],
 				exclude: /node_modules/,
 			},
 			{
@@ -53,7 +67,7 @@ const dashboardNames = [
 
 let dashboardEntries = {}, dashboardPlugins = [];
 dashboardNames.forEach(name => {
-	dashboardEntries[name] = [`./src/dashboard/${name}.js`];
+	dashboardEntries[name] = [`./src/dashboard/${name}.tsx`];
 	dashboardPlugins.push(new HtmlWebpackPlugin({
 		filename: `${name}.html`,
 		template: `./src/dashboard/${name}.html`,
@@ -77,10 +91,17 @@ const dashboardConfig = {
 					'style-loader',
 					'css-loader'
 				]
-			}
+			},
+			{
+				test: /\.ts(x?)$/,
+				use: 'ts-loader',
+			},
 		]
 	},
-	mode: 'production'
+	resolve: {
+		extensions: ['.ts', '.tsx', '.js'],
+	},
+	mode: 'development'
 };
 
 // Add more graphics names here as needed

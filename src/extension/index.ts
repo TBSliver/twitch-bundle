@@ -1,67 +1,74 @@
 import {RefreshableAuthProvider, StaticAuthProvider} from 'twitch-auth';
 import {NodeCG, Replicant} from '../../../../types/server';
-import * as URI from 'urijs';
-import * as ncgUtils from '../../../../lib/util';
+import {getTwitchAuthRouter} from "./router/twitch-auth";
+import {TwitchCredentials, TwitchPubSubListeners} from "./types";
+import {ApiClient} from "twitch";
+import {SingleUserPubSubClient} from 'twitch-pubsub-client';
 
 function Bundle(nodecg: NodeCG) {
-	const twitchCredentials = nodecg.Replicant('twitchCredentials', {
+	const twitchCredentials: Replicant<TwitchCredentials> = nodecg.Replicant('twitchCredentials', {
 		defaultValue: {
 			clientId: undefined,
 			clientSecret: undefined,
 			accessToken: undefined,
 			refreshToken: undefined,
 			expiryTimestamp: undefined,
+			connectedAs: undefined,
+			isConnected: false,
 		}
 	});
+	let twitchClient;
+	let twitchPubSubClient;
+	let twitchPubSubListeners: TwitchPubSubListeners = {};
 
-	const router = nodecg.Router;
+	const onTwitchAuthSuccess = async () => {
+		const {clientId, clientSecret, accessToken, refreshToken, expiryTimestamp} = twitchCredentials.value;
 
-	router.get('/authorize', ncgUtils.authCheck, (req: any, res: any) => {
-		const uri = new URI('https://id.twitch.tv/oauth2/authorize')
-			.addSearch("client_id", twitchCredentials.value.clientId)
-			.addSearch("redirect_uri", getCallbackUrl(nodecg))
-			.addSearch("response_type", "code")
-			.addSearch("grant_type", "authorization_code")
-			.addSearch("scope", "channel_subscriptions+bits:read+channel:read:redemptions");
-
-		res.redirect(uri.toString());
-	});
-
-	nodecg.mount(router);
-
-	nodecg.listenFor('logoutTwitch', async () => {
-		// remove tokens and stop listeners
-
-	})
-}
-
-function getCallbackUrl(nodecg: NodeCG) {
-	return new URI()
-		.protocol(nodecg.config.ssl ? 'https' : 'http')
-		.host(nodecg.config.baseURL)
-		.path(`${nodecg.bundleName}/callback`)
-		.toString();
-}
-
-function getAuthProvider(nodecg: NodeCG, twitchCredentials: Replicant<any>) {
-
-
-	const {clientId, clientSecret, accessToken, refreshToken, expiryTimestamp} = twitchCredentials.value;
-
-	return new RefreshableAuthProvider(
-		new StaticAuthProvider(clientId, accessToken),
-		{
-			clientSecret,
-			refreshToken,
-			expiry: expiryTimestamp === null ? null : new Date(expiryTimestamp),
-			onRefresh: async tokens => {
-				nodecg.log.info('Refreshing Twitch Credentials');
-				twitchCredentials.value.accessToken = tokens.accessToken;
-				twitchCredentials.value.refreshToken = tokens.refreshToken;
-				twitchCredentials.value.expiryTimestamp = tokens.expiryDate === null ? null : tokens.expiryDate.getTime();
+		const authProvider = new RefreshableAuthProvider(
+			new StaticAuthProvider(clientId, accessToken),
+			{
+				clientSecret,
+				refreshToken,
+				expiry: expiryTimestamp === null ? null : new Date(expiryTimestamp),
+				onRefresh: async tokens => {
+					nodecg.log.info('Refreshing Twitch Credentials');
+					twitchCredentials.value.accessToken = tokens.accessToken;
+					twitchCredentials.value.refreshToken = tokens.refreshToken;
+					twitchCredentials.value.expiryTimestamp = tokens.expiryDate === null ? null : tokens.expiryDate.getTime();
+				}
 			}
-		}
-	);
+		);
+		twitchClient = new ApiClient({authProvider});
+		twitchClient.helix.users.getMe().then(r => {
+			twitchCredentials.value.connectedAs = {id: r.id, name: r.name};
+			twitchCredentials.value.isConnected = true;
+		});
+
+		twitchPubSubClient = new SingleUserPubSubClient({twitchClient});
+		twitchPubSubListeners.onBits = await twitchPubSubClient.onBits(message => nodecg.sendMessage('bits', message));
+		twitchPubSubListeners.onSubscription = await twitchPubSubClient.onSubscription(message => nodecg.sendMessage('subscription', message));
+		twitchPubSubListeners.onRedemption = await twitchPubSubClient.onRedemption(message => nodecg.sendMessage('redemption', message));
+		twitchPubSubListeners.onBitsBadgeUnlock = await twitchPubSubClient.onBitsBadgeUnlock(message => nodecg.sendMessage('bitsBadgeUnlock', message));
+	}
+
+	const onTwitchAuthLogout = async () => {
+		await twitchPubSubListeners.onBits.remove();
+		await twitchPubSubListeners.onSubscription.remove();
+		await twitchPubSubListeners.onRedemption.remove();
+		await twitchPubSubListeners.onBitsBadgeUnlock.remove();
+		twitchCredentials.value.isConnected = false;
+		delete twitchCredentials.value.connectedAs;
+		twitchPubSubClient = undefined;
+		twitchClient = undefined;
+	}
+
+	const twitchAuthRouter = getTwitchAuthRouter(nodecg, twitchCredentials, onTwitchAuthSuccess);
+
+	nodecg.mount(`/${nodecg.bundleName}`, twitchAuthRouter);
+
+	nodecg.listenFor('logoutTwitch', onTwitchAuthLogout);
+
+	if (twitchCredentials.value.isConnected) onTwitchAuthSuccess().then(() => nodecg.log.info('Reconnected to Twitch'));
 }
 
 // noinspection JSUnusedGlobalSymbols

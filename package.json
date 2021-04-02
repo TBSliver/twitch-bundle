@@ -37,11 +37,15 @@
   "devDependencies": {
     "@babel/core": "^7.13.8",
     "@babel/preset-env": "^7.12.1",
+    "@types/react": "^17.0.3",
+    "@types/react-dom": "^17.0.3",
     "@types/urijs": "^1.19.14",
     "babel-loader": "^8.1.0",
     "babel-plugin-add-module-exports": "^1.0.4",
     "css-loader": "^4.3.0",
     "html-webpack-plugin": "^4.4.1",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
     "style-loader": "^1.2.1",
     "ts-loader": "^8.0.18",
     "typescript": "^4.2.3",
@@ -52,7 +56,8 @@
   "dependencies": {
     "twitch": "^4.5.0",
     "twitch-auth": "^4.5.0",
-    "uri": "^0.1.0",
-    "urijs": "^1.19.6"
+    "twitch-pubsub-client": "^4.5.1",
+    "urijs": "^1.19.6",
+    "use-nodecg": "^0.4.0"
   }
 }
