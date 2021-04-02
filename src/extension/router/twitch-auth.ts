@@ -1,5 +1,5 @@
 import {NodeCG, Replicant} from "../../../../../types/server";
-import * as URI from "urijs";
+import URI from "urijs";
 import {TwitchCredentials} from "../types";
 import fetch from 'node-fetch';
 

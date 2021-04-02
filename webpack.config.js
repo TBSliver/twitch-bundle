@@ -62,7 +62,7 @@ const extensionConfig = {
 
 // Add more dashboard panel names here as needed
 const dashboardNames = [
-	'panel'
+	'twitch-auth'
 ];
 
 let dashboardEntries = {}, dashboardPlugins = [];
@@ -104,45 +104,7 @@ const dashboardConfig = {
 	mode: 'development'
 };
 
-// Add more graphics names here as needed
-const graphicNames = [
-	'index'
-];
-
-let graphicEntries = {}, graphicPlugins = [];
-graphicNames.forEach(name => {
-	graphicEntries[name] = [`./src/graphics/${name}.js`];
-	graphicPlugins.push(new HtmlWebpackPlugin({
-		filename: `${name}.html`,
-		template: `./src/graphics/${name}.html`,
-		chunks: [name]
-	}));
-});
-
-const graphicsConfig = {
-	entry: graphicEntries,
-	output: {
-		filename: '[name].js',
-		path: path.join(__dirname, 'graphics')
-	},
-	plugins: graphicPlugins,
-	devtool: 'source-map',
-	module: {
-		rules: [
-			{
-				test: /\.css$/,
-				use: [
-					'style-loader',
-					'css-loader'
-				]
-			}
-		]
-	},
-	mode: 'production'
-};
-
 module.exports = [
 	extensionConfig,
 	dashboardConfig,
-	graphicsConfig,
 ];
