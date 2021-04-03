@@ -47,7 +47,7 @@ export function getTwitchAuthRouter(nodecg: NodeCG, twitchCredentials: Replicant
 
 function getCallbackUrl(nodecg: NodeCG) {
 	return new URI()
-		.protocol(nodecg.config.ssl.enabled ? 'https' : 'http')
+		.protocol(nodecg.config.ssl?.enabled ? 'https' : 'http')
 		.host(nodecg.config.baseURL)
 		.path(`${nodecg.bundleName}/callback`)
 		.toString();
@@ -55,7 +55,7 @@ function getCallbackUrl(nodecg: NodeCG) {
 
 function getAuthorizeUrl(nodecg: NodeCG) {
 	return new URI()
-		.protocol(nodecg.config.ssl.enabled ? 'https' : 'http')
+		.protocol(nodecg.config.ssl?.enabled ? 'https' : 'http')
 		.host(nodecg.config.baseURL)
 		.path(`${nodecg.bundleName}/authorize`)
 		.toString();
