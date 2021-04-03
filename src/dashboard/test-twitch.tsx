@@ -26,7 +26,10 @@ function TestBits() {
 	const [testData, setTestData] = useState(rawBitData);
 
 	const handleChange = (event: FormEvent<HTMLInputElement>) => {
-		setTestData({...testData, [event.currentTarget.name]: event.currentTarget.value});
+		setTestData({
+			...testData,
+			[event.currentTarget.name]: event.currentTarget.type === 'number' ? Number.parseInt(event.currentTarget.value) : event.currentTarget.value
+		});
 	}
 	const handleSendMessage = () => nodecg.sendMessage('bits', testData);
 
@@ -153,7 +156,8 @@ function TestRedemption() {
 						<input id="redemption-reward-title" name="redemption.reward.title"
 							   value={testData.redemption.reward.title} onChange={handleChangeTitle}/>
 						<label htmlFor="redemption-reward-cost">Cost</label>
-						<input id="redemption-reward-cost" name="redemption.reward.cost" value={testData.redemption.reward.cost}
+						<input id="redemption-reward-cost" name="redemption.reward.cost"
+							   value={testData.redemption.reward.cost}
 							   onChange={handleChangeCost}/>
 						<label htmlFor="user-input">User Input</label>
 						<input id="user-input" name="redemption.user_input" value={testData.redemption.user_input}
