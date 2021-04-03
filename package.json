@@ -32,6 +32,14 @@
         "workspace": "Settings",
         "file": "twitch-events.html",
         "headerColor": "#764dc1"
+      },
+      {
+        "name": "test-twitch",
+        "title": "Twitch Testing",
+        "width": 2,
+        "workspace": "Settings",
+        "file": "test-twitch.html",
+        "headerColor": "#764dc1"
       }
     ]
   },

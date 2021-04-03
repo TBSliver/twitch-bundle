@@ -64,6 +64,7 @@ const extensionConfig = {
 const dashboardNames = [
 	'twitch-auth',
 	'twitch-events',
+	'test-twitch',
 ];
 
 let dashboardEntries = {}, dashboardPlugins = [];

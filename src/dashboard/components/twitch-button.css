@@ -1,0 +1,32 @@
+a.twitch, button.twitch {
+	width: 100%;
+	border: none;
+	background-color: #6441a5;
+	border-radius: 8px;
+	display: inline-block;
+	cursor: pointer;
+	color: #ffffff;
+	font-size: 14px;
+	font-weight: bold;
+	padding: 13px 32px;
+	text-decoration: none;
+	text-shadow: 1px 1px 0 #565656;
+	text-align: center;
+	box-sizing: border-box;
+	margin: 8px 0;
+}
+
+a.twitch:hover, button.twitch:hover {
+	background-color: #764dc1;
+}
+
+a.twitch:hover, button.twitch:active {
+	position: relative;
+	background-color: #422b6b;
+}
+
+button.twitch:disabled {
+	background-color: #565656;
+	color: grey;
+	cursor: default;
+}

@@ -1,0 +1,46 @@
+@import "components/inputs.css";
+@import "components/twitch-button.css";
+
+.test-section {
+	width: 100%;
+	margin: 8px 0;
+}
+
+.test-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 8px 20px;
+}
+
+.test-header:hover {
+	background-color: rgba(100, 100, 100, .1);
+}
+
+.test-header-title {
+}
+
+.test-header-buttons {
+	text-align: right;
+	white-space: nowrap;
+}
+
+.test-header-buttons > div {
+	cursor: pointer;
+	display: inline-block;
+	margin-right: 6px;
+	border-radius: 6px;
+}
+
+.test-header-buttons > div:last-child {
+	margin-right: 0;
+}
+
+.test-header-buttons > div:hover {
+	background-color: rgba(100, 100, 100, .3);
+}
+
+.test-body {
+	padding: 8px 20px;
+	background-color: rgba(100, 100, 100, .1);
+}
