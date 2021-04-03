@@ -45,8 +45,8 @@ Example:
 
 ```js
 nodecg.listenFor('redemption', 'twitch-bundle', message => {
-  console.log(`${message.data.redemption.user.display_name} redeemed ${message.data.redemption.reward.title}`);
-})
+  console.log(`${message.redemption.user.display_name} redeemed ${message.redemption.reward.title}`);
+});
 ```
 
 # Issues
