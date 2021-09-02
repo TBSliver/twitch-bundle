@@ -65,6 +65,7 @@ const dashboardNames = [
 	'twitch-auth',
 	'twitch-events',
 	'test-twitch',
+	'twitch-clips',
 ];
 
 let dashboardEntries = {}, dashboardPlugins = [];
@@ -106,7 +107,52 @@ const dashboardConfig = {
 	mode: 'production'
 };
 
+// Add more graphics names here as needed
+const graphicNames = [
+	'twitch-clips'
+];
+
+let graphicEntries = {}, graphicPlugins = [];
+graphicNames.forEach(name => {
+	graphicEntries[name] = [`./src/graphics/${name}.tsx`];
+	graphicPlugins.push(new HtmlWebpackPlugin({
+		filename: `${name}.html`,
+		template: `./src/graphics/${name}.html`,
+		chunks: [name]
+	}));
+});
+
+const graphicsConfig = {
+	entry: graphicEntries,
+	output: {
+		filename: '[name].js',
+		path: path.join(__dirname, 'graphics')
+	},
+	plugins: graphicPlugins,
+	devtool: 'source-map',
+	module: {
+		rules: [
+			{
+				test: /\.css$/,
+				use: [
+					'style-loader',
+					'css-loader'
+				]
+			},
+			{
+				test: /\.ts(x?)$/,
+				use: 'ts-loader',
+			},
+		]
+	},
+	resolve: {
+		extensions: ['.ts', '.tsx', '.js'],
+	},
+	mode: 'production'
+};
+
 module.exports = [
 	extensionConfig,
 	dashboardConfig,
+	graphicsConfig,
 ];

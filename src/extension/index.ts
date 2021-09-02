@@ -1,7 +1,7 @@
 import {RefreshableAuthProvider, StaticAuthProvider} from 'twitch-auth';
 import {NodeCG, Replicant} from '../../../../types/server';
 import {getTwitchAuthRouter} from "./router/twitch-auth";
-import {TwitchCredentials, TwitchEvent, TwitchPubSubListeners} from "./types";
+import {TwitchClip, TwitchCredentials, TwitchEvent, TwitchPubSubListeners} from "./types";
 import {ApiClient} from "twitch";
 import {SingleUserPubSubClient} from 'twitch-pubsub-client';
 
@@ -18,8 +18,10 @@ function Bundle(nodecg: NodeCG) {
 		}
 	});
 	const twitchEvents: Replicant<TwitchEvent[]> = nodecg.Replicant('twitchEvents', {defaultValue: []});
+	const twitchClips: Replicant<TwitchClip[]> = nodecg.Replicant('twitchClips', {defaultValue: []});
+	nodecg.Replicant<{[id: string]: TwitchClip}>('twitchSelectedClips', {defaultValue: {}});
 
-	let twitchClient;
+	let twitchClient: ApiClient;
 	let twitchPubSubClient;
 	let twitchPubSubListeners: TwitchPubSubListeners = {};
 
@@ -30,6 +32,19 @@ function Bundle(nodecg: NodeCG) {
 	};
 	const clearTwitchEvents = () => {
 		twitchEvents.value = []
+	};
+	const updateTwitchClips = () => {
+		if (!twitchCredentials.value.connectedAs)
+			return;
+
+		twitchClient.helix.clips.getClipsForBroadcasterPaginated(twitchCredentials.value.connectedAs, {limit: 100}).getAll().then(clips => {
+			twitchClips.value = clips.map(clip => {
+				const {id, creatorDisplayName, title, creationDate} = clip;
+				const thumbnailUrl = clip.thumbnailUrl.replace("-preview-480x272.jpg", ".mp4");
+				nodecg.log.info('Clips: ' + thumbnailUrl);
+				return {id, url: thumbnailUrl, creator_name: creatorDisplayName, title, created_at: creationDate.toISOString()};
+			});
+		});
 	};
 
 	const onTwitchAuthSuccess = async () => {
@@ -60,6 +75,8 @@ function Bundle(nodecg: NodeCG) {
 		twitchPubSubListeners.onSubscription = await twitchPubSubClient.onSubscription(addTwitchPubSubEvent('subscription'));
 		twitchPubSubListeners.onRedemption = await twitchPubSubClient.onRedemption(addTwitchPubSubEvent('redemption'));
 		twitchPubSubListeners.onBitsBadgeUnlock = await twitchPubSubClient.onBitsBadgeUnlock(addTwitchPubSubEvent('bitsBadgeUnlock'));
+
+		updateTwitchClips();
 	}
 
 	const onTwitchAuthLogout = async () => {
@@ -79,6 +96,7 @@ function Bundle(nodecg: NodeCG) {
 
 	nodecg.listenFor('logoutTwitch', onTwitchAuthLogout);
 	nodecg.listenFor('clearTwitchEvents', clearTwitchEvents);
+	nodecg.listenFor('updateTwitchClips', updateTwitchClips);
 
 	if (twitchCredentials.value.isConnected) onTwitchAuthSuccess().then(() => nodecg.log.info('Reconnected to Twitch'));
 }

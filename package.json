@@ -40,6 +40,21 @@
         "workspace": "Settings",
         "file": "test-twitch.html",
         "headerColor": "#764dc1"
+      },
+      {
+        "name": "twitch-clips",
+        "title": "Twitch Clips",
+        "width": 4,
+        "workspace": "Settings",
+        "file": "twitch-clips.html",
+        "headerColor": "#764dc1"
+      }
+    ],
+    "graphics": [
+      {
+        "file": "twitch-clips.html",
+        "width": 1920,
+        "height": 1080
       }
     ]
   },

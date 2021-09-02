@@ -1,0 +1,42 @@
+.video-wrapper {
+	position: relative;
+}
+
+.video-overlay {
+	position: absolute;
+	right: 0;
+	top: 0;
+	width: 100%;
+	padding: 5px;
+	z-index: 1000;
+}
+
+.video-overlay > div {
+	text-align: right;
+	text-shadow: 2px 2px 5px #000000;
+}
+
+.video-creator {
+	font-size: 200%;
+}
+
+.list-scroller {
+	overflow: auto;
+	height: 400px;
+}
+
+.list-item {
+	display: flex;
+}
+
+.list-item:hover {
+	background-color: rgba(0,0,0,0.3);
+}
+
+.list-text {
+	flex-grow: 1
+}
+
+.list-buttons {
+
+}
