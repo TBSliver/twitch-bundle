@@ -19,7 +19,7 @@ function Bundle(nodecg: NodeCG) {
 	});
 	const twitchEvents: Replicant<TwitchEvent[]> = nodecg.Replicant('twitchEvents', {defaultValue: []});
 	const twitchClips: Replicant<TwitchClip[]> = nodecg.Replicant('twitchClips', {defaultValue: []});
-	nodecg.Replicant<{[id: string]: TwitchClip}>('twitchSelectedClips', {defaultValue: {}});
+	nodecg.Replicant<{ [id: string]: TwitchClip }>('twitchSelectedClips', {defaultValue: {}});
 
 	let twitchClient: ApiClient;
 	let twitchPubSubClient;
@@ -38,11 +38,17 @@ function Bundle(nodecg: NodeCG) {
 			return;
 
 		twitchClient.helix.clips.getClipsForBroadcasterPaginated(twitchCredentials.value.connectedAs, {limit: 100}).getAll().then(clips => {
-			twitchClips.value = clips.map(clip => {
+			twitchClips.value = clips.sort((a, b) => b.creationDate.getTime() - a.creationDate.getTime()).map(clip => {
 				const {id, creatorDisplayName, title, creationDate} = clip;
 				const thumbnailUrl = clip.thumbnailUrl.replace("-preview-480x272.jpg", ".mp4");
 				nodecg.log.info('Clips: ' + thumbnailUrl);
-				return {id, url: thumbnailUrl, creator_name: creatorDisplayName, title, created_at: creationDate.toISOString()};
+				return {
+					id,
+					url: thumbnailUrl,
+					creator_name: creatorDisplayName,
+					title,
+					created_at: creationDate.toISOString()
+				};
 			});
 		});
 	};

@@ -40,6 +40,7 @@ function App() {
 	};
 
 	const showSelectedOnly = () => setShowSelected(p => !p);
+	const clipSorter = (a: TwitchClip, b: TwitchClip) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
 
 	return (
 		<>
@@ -47,7 +48,7 @@ function App() {
 			<button onClick={showSelectedOnly}>{showSelected ? 'Show All' : 'Show Selected'}</button>
 			<div className={"list-scroller"}>
 				{showSelected
-					? Object.values(selectedClipsReplicant).map(video => (
+					? Object.values(selectedClipsReplicant).sort(clipSorter).map(video => (
 						<SelectedVideoInfo key={video.id} video={video} isSelected={false}
 										   showVideo={showVideo(video)} toggleSelect={toggleSelect(video)}/>
 					))
@@ -73,27 +74,25 @@ function App() {
 		;
 }
 
-interface SelectedVideoInfoProps
-{
+interface SelectedVideoInfoProps {
 	video: TwitchClip;
 
 	showVideo()
-:
-	void;
+		:
+		void;
 
 	toggleSelect()
-:
-	void;
+		:
+		void;
 
 	isSelected: boolean;
 }
 
 function SelectedVideoInfo(
-{
-	video, showVideo, toggleSelect, isSelected
-}
-: SelectedVideoInfoProps)
-{
+	{
+		video, showVideo, toggleSelect, isSelected
+	}
+		: SelectedVideoInfoProps) {
 	return (
 		<div key={video.id} className={"list-item"}>
 			<div className={"list-text"}>
