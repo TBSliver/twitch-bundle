@@ -31,8 +31,10 @@ function EventSection({title, children, event}: EventSectionProps) {
 	const handleResendEvent = () => nodecg.sendMessage(event.messageName, event.data);
 
 	let displayTime;
-	if (isRedemptionEvent(event)) displayTime = dayjs(event.data.timestamp);
-	if (isSubscriptionEvent(event) || isBitsEvent(event) || isBitsBadgeEvent(event)) displayTime = dayjs(event.data.time);
+	if (event.data) {
+		if (isRedemptionEvent(event)) displayTime = dayjs(event.data.timestamp);
+		if (isSubscriptionEvent(event) || isBitsEvent(event) || isBitsBadgeEvent(event)) displayTime = dayjs(event.data.time);
+	}
 
 	return (
 		<div className="event-section">
@@ -69,11 +71,18 @@ interface PubSubSubscriptionEventProps {
 }
 
 function PubSubSubscriptionEvent({event}: PubSubSubscriptionEventProps) {
-	const isGift = event.data.context === 'subgift' || event.data.context === 'anonsubgift';
+	if (event.data === undefined) {
+		return (
+			<EventSection title={<div>UnknownEvent</div>} event={event}>
+				<div>something went wrong?</div>
+				<pre>{JSON.stringify(event,null,4)}</pre>
+			</EventSection>
+		)
+	}
 	return (
 		<EventSection
 			title={<>
-				<div className="subscription">Sub {isGift && 'Gift'}</div>
+				<div className="subscription">Sub</div>
 				<div className="user">
 					{event.data.context === 'subgift'
 						? `${event.data.recipient_display_name} -> ${event.data.display_name}`

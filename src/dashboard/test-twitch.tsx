@@ -1,4 +1,4 @@
-import React, {FormEvent, useState} from 'react';
+import React, {ChangeEvent, useState} from 'react';
 import {render} from 'react-dom';
 import './test-twitch.css';
 import {DownChevronIcon} from "./components/icon";
@@ -25,10 +25,10 @@ function TestBits() {
 
 	const [testData, setTestData] = useState(rawBitData);
 
-	const handleChange = (event: FormEvent<HTMLInputElement>) => {
+	const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
 		setTestData({
 			...testData,
-			[event.currentTarget.name]: event.currentTarget.type === 'number' ? Number.parseInt(event.currentTarget.value) : event.currentTarget.value
+			[event.target.name]: event.target.type === 'number' ? Number.parseInt(event.target.value) : event.target.value
 		});
 	}
 	const handleSendMessage = () => nodecg.sendMessage('bits', testData);
@@ -108,29 +108,29 @@ function TestRedemption() {
 
 	const [testData, setTestData] = useState(rawRedemptionData);
 
-	const handleChangeUserName = (event: FormEvent<HTMLInputElement>) => {
+	const handleChangeUserName = (event: ChangeEvent<HTMLInputElement>) => {
 		setTestData(val => {
-			val.redemption.user.display_name = event.currentTarget.value;
-			val.redemption.user.login = event.currentTarget.value.toLowerCase();
-			return val;
+			val.redemption.user.display_name = event.target.value;
+			val.redemption.user.login = event.target.value.toLowerCase();
+			return {...val};
 		});
 	};
-	const handleChangeTitle = (event: FormEvent<HTMLInputElement>) => {
+	const handleChangeTitle = (event: ChangeEvent<HTMLInputElement>) => {
 		setTestData(val => {
-			val.redemption.reward.title = event.currentTarget.value;
-			return val;
+			val.redemption.reward.title = event.target.value;
+			return {...val};
 		});
 	};
-	const handleChangeCost = (event: FormEvent<HTMLInputElement>) => {
+	const handleChangeCost = (event: ChangeEvent<HTMLInputElement>) => {
 		setTestData(val => {
-			val.redemption.reward.cost = Number.parseInt(event.currentTarget.value);
-			return val;
+			val.redemption.reward.cost = Number.parseInt(event.target.value);
+			return {...val};
 		});
 	};
-	const handleChangeMessage = (event: FormEvent<HTMLInputElement>) => {
+	const handleChangeMessage = (event: ChangeEvent<HTMLInputElement>) => {
 		setTestData(val => {
-			val.redemption.user_input = event.currentTarget.value;
-			return val;
+			val.redemption.user_input = event.target.value;
+			return {...val};
 		});
 	};
 

@@ -80,9 +80,10 @@
     "webpack-node-externals": "^2.5.2"
   },
   "dependencies": {
-    "twitch": "^4.5.0",
-    "twitch-auth": "^4.5.0",
-    "twitch-pubsub-client": "^4.5.1",
+    "twitch": "^4.6.7",
+    "twitch-auth": "^4.6.7",
+    "twitch-chat-client": "^4.6.7",
+    "twitch-pubsub-client": "^4.6.7",
     "urijs": "^1.19.6"
   }
 }

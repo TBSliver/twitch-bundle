@@ -41,7 +41,7 @@ function Bundle(nodecg: NodeCG) {
 			twitchClips.value = clips.sort((a, b) => b.creationDate.getTime() - a.creationDate.getTime()).map(clip => {
 				const {id, creatorDisplayName, title, creationDate} = clip;
 				const thumbnailUrl = clip.thumbnailUrl.replace("-preview-480x272.jpg", ".mp4");
-				nodecg.log.info('Clips: ' + thumbnailUrl);
+				// nodecg.log.info('Clips: ' + thumbnailUrl);
 				return {
 					id,
 					url: thumbnailUrl,
@@ -71,7 +71,7 @@ function Bundle(nodecg: NodeCG) {
 			}
 		);
 		twitchClient = new ApiClient({authProvider});
-		twitchClient.helix.users.getMe().then(r => {
+		await twitchClient.helix.users.getMe().then(r => {
 			twitchCredentials.value.connectedAs = {id: r.id, name: r.name};
 			twitchCredentials.value.isConnected = true;
 		});
