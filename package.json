@@ -55,6 +55,11 @@
         "file": "twitch-clips.html",
         "width": 1920,
         "height": 1080
+      },
+      {
+        "file": "twitch-chat.html",
+        "width": 1920,
+        "height": 1080
       }
     ]
   },
@@ -64,6 +69,7 @@
     "@types/react": "^17.0.3",
     "@types/react-dom": "^17.0.3",
     "@types/urijs": "^1.19.14",
+    "animate.css": "^4.1.1",
     "babel-loader": "^8.1.0",
     "babel-plugin-add-module-exports": "^1.0.4",
     "css-loader": "^4.3.0",
@@ -80,10 +86,10 @@
     "webpack-node-externals": "^2.5.2"
   },
   "dependencies": {
-    "twitch": "^4.6.7",
-    "twitch-auth": "^4.6.7",
-    "twitch-chat-client": "^4.6.7",
-    "twitch-pubsub-client": "^4.6.7",
+    "@twurple/api": "^5.0.0",
+    "@twurple/auth": "^5.0.0",
+    "@twurple/chat": "^5.0.0",
+    "@twurple/pubsub": "^5.0.0",
     "urijs": "^1.19.6"
   }
 }

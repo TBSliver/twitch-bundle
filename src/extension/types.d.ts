@@ -1,8 +1,20 @@
-import {PubSubListener} from "twitch-pubsub-client";
-import {PubSubSubscriptionMessageData} from "twitch-pubsub-client/lib/Messages/PubSubSubscriptionMessage";
-import {PubSubRedemptionMessageContent} from "twitch-pubsub-client/lib/Messages/PubSubRedemptionMessage";
-import {PubSubBitsMessageContent} from "twitch-pubsub-client/lib/Messages/PubSubBitsMessage";
-import {PubSubBitsBadgeUnlockMessageContent} from "twitch-pubsub-client/lib/Messages/PubSubBitsBadgeUnlockMessage";
+import {
+	PubSubBitsBadgeUnlockMessage,
+	PubSubBitsMessage,
+	PubSubListener,
+	PubSubRedemptionMessage
+} from "@twurple/pubsub";
+import {PubSubSubscriptionMessageData} from "@twurple/pubsub/lib/messages/PubSubSubscriptionMessage";
+import {PubSubRedemptionMessageContent} from "@twurple/pubsub/lib/messages/PubSubRedemptionMessage";
+import {PubSubBitsMessageContent} from "@twurple/pubsub/lib/messages/PubSubBitsMessage";
+import {PubSubBitsBadgeUnlockMessageContent} from "@twurple/pubsub/lib/messages/PubSubBitsBadgeUnlockMessage";
+import type {Listener} from "@d-fischer/typed-event-emitter";
+
+export type PubSubEventMessage = PubSubBitsMessage | PubSubRedemptionMessage | PubSubBitsBadgeUnlockMessage;
+export type PubSubEventMessageContent =
+	PubSubBitsMessageContent
+	| PubSubRedemptionMessageContent
+	| PubSubBitsBadgeUnlockMessageContent;
 
 interface TwitchCredentialConnectedAs {
 	id: string;
@@ -16,7 +28,8 @@ export interface TwitchCredentials {
 	clientSecret: string;
 	accessToken: string;
 	refreshToken: string;
-	expiryTimestamp: number;
+	expiresIn: number;
+	obtainmentTimestamp: number;
 }
 
 export interface TwitchPubSubListeners {
@@ -24,6 +37,13 @@ export interface TwitchPubSubListeners {
 	onSubscription?: PubSubListener<never>;
 	onBits?: PubSubListener<never>;
 	onRedemption?: PubSubListener<never>;
+}
+
+export interface TwitchChatClientListeners {
+	onAction?: Listener;
+	onTimeout?: Listener;
+	onDelete?: Listener;
+	onMessage?: Listener;
 }
 
 export interface TwitchRedemptionEvent {
@@ -52,10 +72,14 @@ export interface TwitchBitsBadgeEvent {
 
 export type TwitchPubSubEvent = TwitchRedemptionEvent
 	| TwitchBitsEvent
-	| TwitchSubscriptionEvent
+	// | TwitchSubscriptionEvent
 	| TwitchBitsBadgeEvent;
 
-export type TwitchEvent = TwitchPubSubEvent;
+export interface TwitchEvent {
+	type: string;
+	messageName: string;
+	data: PubSubEventMessageContent;
+}
 
 export interface TwitchClip {
 	id: string;

@@ -2,8 +2,8 @@ import React, {ChangeEvent, useState} from 'react';
 import {render} from 'react-dom';
 import './test-twitch.css';
 import {DownChevronIcon} from "./components/icon";
-import {PubSubBitsMessageContent} from "twitch-pubsub-client/lib/Messages/PubSubBitsMessage";
-import {PubSubRedemptionMessageContent} from "twitch-pubsub-client/lib/Messages/PubSubRedemptionMessage";
+import {PubSubBitsMessageContent} from "@twurple/pubsub/lib/Messages/PubSubBitsMessage";
+import {PubSubRedemptionMessageContent} from "@twurple/pubsub/lib/Messages/PubSubRedemptionMessage";
 
 const rawBitData: PubSubBitsMessageContent = {
 	"user_name": "testUser",
@@ -68,7 +68,7 @@ const rawRedemptionData: PubSubRedemptionMessageContent = {
 		"id": "82edc824-930b-4d0d-b350-92ea360c6706",
 		"user": {
 			"id": "123456789",
-			"login": "testuser",
+			"login": "testUser",
 			"display_name": "testUser"
 		},
 		"channel_id": "123456789",
@@ -77,7 +77,7 @@ const rawRedemptionData: PubSubRedemptionMessageContent = {
 			"id": "1b09c741-3a39-43a1-8041-d15667234481",
 			"channel_id": "123456789",
 			"title": "Shout Out",
-			"prompt": "Write a name and I give that person a shoutout",
+			"prompt": "Write a name and I give that person a shout out",
 			"cost": 1200,
 			"is_user_input_required": true,
 			"is_sub_only": false,

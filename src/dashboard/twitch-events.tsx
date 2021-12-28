@@ -9,13 +9,13 @@ import {
 	TwitchEvent,
 	TwitchPubSubEvent,
 	TwitchRedemptionEvent,
-	TwitchSubscriptionEvent
+	// TwitchSubscriptionEvent
 } from "../extension/types";
 import {DownChevronIcon, RefreshIcon} from "./components/icon";
 import dayjs from "dayjs";
 
 const isRedemptionEvent = (event: TwitchEvent): event is TwitchRedemptionEvent => (event as TwitchRedemptionEvent).data.timestamp !== undefined;
-const isSubscriptionEvent = (event: TwitchEvent): event is TwitchSubscriptionEvent => (event as TwitchSubscriptionEvent).data.sub_message !== undefined;
+// const isSubscriptionEvent = (event: TwitchEvent): event is TwitchSubscriptionEvent => (event as TwitchSubscriptionEvent).data.sub_message !== undefined;
 const isBitsEvent = (event: TwitchEvent): event is TwitchBitsEvent => (event as TwitchBitsEvent).data.bits_used !== undefined;
 const isBitsBadgeEvent = (event: TwitchEvent): event is TwitchBitsBadgeEvent => (event as TwitchBitsBadgeEvent).data.badge_tier !== undefined;
 
@@ -33,7 +33,7 @@ function EventSection({title, children, event}: EventSectionProps) {
 	let displayTime;
 	if (event.data) {
 		if (isRedemptionEvent(event)) displayTime = dayjs(event.data.timestamp);
-		if (isSubscriptionEvent(event) || isBitsEvent(event) || isBitsBadgeEvent(event)) displayTime = dayjs(event.data.time);
+		if (/*isSubscriptionEvent(event) ||*/ isBitsEvent(event) || isBitsBadgeEvent(event)) displayTime = dayjs(event.data.time);
 	}
 
 	return (
@@ -66,65 +66,65 @@ function DataSection({name, value}: DataSectionProps) {
 	</p>
 }
 
-interface PubSubSubscriptionEventProps {
-	event: TwitchSubscriptionEvent;
-}
+// interface PubSubSubscriptionEventProps {
+// 	event: TwitchSubscriptionEvent;
+// }
 
-function PubSubSubscriptionEvent({event}: PubSubSubscriptionEventProps) {
-	if (event.data === undefined) {
-		return (
-			<EventSection title={<div>UnknownEvent</div>} event={event}>
-				<div>something went wrong?</div>
-				<pre>{JSON.stringify(event,null,4)}</pre>
-			</EventSection>
-		)
-	}
-	return (
-		<EventSection
-			title={<>
-				<div className="subscription">Sub</div>
-				<div className="user">
-					{event.data.context === 'subgift'
-						? `${event.data.recipient_display_name} -> ${event.data.display_name}`
-						: event.data.context === 'anonsubgift'
-							? event.data.recipient_display_name
-							: event.data.display_name}
-				</div>
-				{event.data.sub_plan_name}</>}
-			event={event}>
-			{event.data.context === 'subgift' && (
-				<>
-					<DataSection name="From" value={event.data.display_name}/>
-					<DataSection name="To" value={event.data.recipient_display_name}/>
-				</>
-			)}
-			{event.data.context === 'anonsubgift' && (
-				<>
-					<DataSection name="From" value={<i>Anonymous</i>}/>
-					<DataSection name="To" value={event.data.recipient_display_name}/>
-				</>
-			)}
-			{event.data.context === 'sub' || event.data.context === 'resub' && (
-				<DataSection name="User" value={event.data.display_name}/>
-			)}
-			<DataSection name="Level" value={event.data.sub_plan_name}/>
-			<DataSection name="Type" value={event.data.context}/>
-			<DataSection name="Timestamp" value={dayjs(event.data.time).format('ddd, MMM D, YYYY h:mm A')}/>
-			{event.data.context === 'sub' || event.data.context === 'resub' && (
-				<>
-					<DataSection name="Cumulative" value={event.data.cumulative_months}/>
-					<DataSection name="Streak" value={event.data.streak_months}/>
-				</>
-			)}
-			{event.data.context === 'subgift' || event.data.context === 'anonsubgift' && (
-				<>
-					<DataSection name="No. Months" value={event.data.months}/>
-				</>
-			)}
-			<DataSection name="Message" value={event.data.sub_message.message || <i>No Message</i>}/>
-		</EventSection>
-	);
-}
+// function PubSubSubscriptionEvent({event}: PubSubSubscriptionEventProps) {
+// 	if (event.data === undefined) {
+// 		return (
+// 			<EventSection title={<div>UnknownEvent</div>} event={event}>
+// 				<div>something went wrong?</div>
+// 				<pre>{JSON.stringify(event,null,4)}</pre>
+// 			</EventSection>
+// 		)
+// 	}
+// 	return (
+// 		<EventSection
+// 			title={<>
+// 				<div className="subscription">Sub</div>
+// 				<div className="user">
+// 					{event.data.context === 'subgift'
+// 						? `${event.data.recipient_display_name} -> ${event.data.display_name}`
+// 						: event.data.context === 'anonsubgift'
+// 							? event.data.recipient_display_name
+// 							: event.data.display_name}
+// 				</div>
+// 				{event.data.sub_plan_name}</>}
+// 			event={event}>
+// 			{event.data.context === 'subgift' && (
+// 				<>
+// 					<DataSection name="From" value={event.data.display_name}/>
+// 					<DataSection name="To" value={event.data.recipient_display_name}/>
+// 				</>
+// 			)}
+// 			{event.data.context === 'anonsubgift' && (
+// 				<>
+// 					<DataSection name="From" value={<i>Anonymous</i>}/>
+// 					<DataSection name="To" value={event.data.recipient_display_name}/>
+// 				</>
+// 			)}
+// 			{event.data.context === 'sub' || event.data.context === 'resub' && (
+// 				<DataSection name="User" value={event.data.display_name}/>
+// 			)}
+// 			<DataSection name="Level" value={event.data.sub_plan_name}/>
+// 			<DataSection name="Type" value={event.data.context}/>
+// 			<DataSection name="Timestamp" value={dayjs(event.data.time).format('ddd, MMM D, YYYY h:mm A')}/>
+// 			{event.data.context === 'sub' || event.data.context === 'resub' && (
+// 				<>
+// 					<DataSection name="Cumulative" value={event.data.cumulative_months}/>
+// 					<DataSection name="Streak" value={event.data.streak_months}/>
+// 				</>
+// 			)}
+// 			{event.data.context === 'subgift' || event.data.context === 'anonsubgift' && (
+// 				<>
+// 					<DataSection name="No. Months" value={event.data.months}/>
+// 				</>
+// 			)}
+// 			<DataSection name="Message" value={event.data.sub_message.message || <i>No Message</i>}/>
+// 		</EventSection>
+// 	);
+// }
 
 interface PubSubBitBadgeEventProps {
 	event: TwitchBitsBadgeEvent;
@@ -202,8 +202,8 @@ function PubSubEvent({event}: PubSubEventProps) {
 			return (<PubSubBitEvent event={event as TwitchBitsEvent}/>);
 		case 'bitsBadgeUnlock':
 			return (<PubSubBitBadgeEvent event={event as TwitchBitsBadgeEvent}/>);
-		case 'subscription':
-			return (<PubSubSubscriptionEvent event={event as TwitchSubscriptionEvent}/>);
+		// case 'subscription':
+		// 	return (<PubSubSubscriptionEvent event={event as TwitchSubscriptionEvent}/>);
 		default:
 			return (
 				<EventSection title={<>
