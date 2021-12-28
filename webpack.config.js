@@ -109,7 +109,8 @@ const dashboardConfig = {
 
 // Add more graphics names here as needed
 const graphicNames = [
-	'twitch-clips'
+	'twitch-clips',
+	'twitch-chat',
 ];
 
 let graphicEntries = {}, graphicPlugins = [];

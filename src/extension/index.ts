@@ -179,10 +179,10 @@ function Bundle(nodecg: NodeCG) {
 		// twitchChatClient.onJoin((channel, user) => {
 		// 	nodecg.log.info(`Twitch Chat: Connected to ${channel} as ${user}`);
 		// });
-		twitchChatClientListeners.onMessage = await twitchChatClient.onMessage(manageTwitchChatMessages);
-		twitchChatClientListeners.onAction = await twitchChatClient.onAction(manageTwitchChatMessages);
-		twitchChatClientListeners.onDelete = await twitchChatClient.onMessageRemove(onTwitchDeleteChatMessage);
-		twitchChatClientListeners.onTimeout = await twitchChatClient.onTimeout(onChatUserTimeout);
+		twitchChatClientListeners.onMessage = twitchChatClient.onMessage(manageTwitchChatMessages);
+		twitchChatClientListeners.onAction = twitchChatClient.onAction(manageTwitchChatMessages);
+		twitchChatClientListeners.onDelete = twitchChatClient.onMessageRemove(onTwitchDeleteChatMessage);
+		twitchChatClientListeners.onTimeout = twitchChatClient.onTimeout(onChatUserTimeout);
 		await twitchChatClient.connect();
 
 		updateTwitchClips();
