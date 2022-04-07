@@ -66,6 +66,7 @@ const dashboardNames = [
 	'twitch-events',
 	'test-twitch',
 	'twitch-clips',
+	'twitch-hello',
 ];
 
 let dashboardEntries = {}, dashboardPlugins = [];

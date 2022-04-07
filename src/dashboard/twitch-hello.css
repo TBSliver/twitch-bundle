@@ -1,0 +1,69 @@
+.pull-right {
+	float: right;
+}
+
+.action-buttons {
+	display: flex;
+	justify-content: space-between;
+}
+
+.action-buttons > .button > button {
+	cursor: pointer;
+	display: inline-block;
+	padding: 6px 12px;
+	margin-right: 6px;
+	border: none;
+	border-radius: 6px;
+}
+
+.action-buttons > .button > button:last-child {
+	margin-right: 0;
+}
+
+button.reset {
+	background-color: #ff752d;
+}
+
+button.ignore {
+	background-color: #6441a5;
+}
+
+input {
+	padding: 6px;
+	border: none;
+	border-radius: 6px;
+}
+
+.ignore-list {
+	display: flex;
+	flex-direction: column;
+}
+
+.ignore-item {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	margin-bottom: 5px;
+	align-items: center;
+}
+
+.ignore-list > .ignore-item:last-child {
+	margin-bottom: 0;
+}
+
+.ignore-name {
+	flex-grow: 1;
+	margin-right: 5px;
+}
+
+.ignore-button {
+	background-color: #565656;
+}
+
+button.ignore-button {
+	cursor: pointer;
+	display: inline-block;
+	padding: 6px 12px;
+	border: none;
+	border-radius: 6px;
+}

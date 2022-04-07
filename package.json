@@ -1,6 +1,6 @@
 {
   "name": "twitch-bundle",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "NodeCG Twitch Bundle for various endpoints",
   "homepage": "",
   "scripts": {
@@ -47,6 +47,14 @@
         "width": 4,
         "workspace": "Settings",
         "file": "twitch-clips.html",
+        "headerColor": "#764dc1"
+      },
+      {
+        "name": "twitch-hello",
+        "title": "Twitch Hello",
+        "width": 2,
+        "workspace": "Settings",
+        "file": "twitch-hello.html",
         "headerColor": "#764dc1"
       }
     ],

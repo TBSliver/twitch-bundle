@@ -23,6 +23,11 @@ interface ChatMessageData {
 	parsedMessage: [ParsedMessagePart],
 }
 
+interface TwitchHello {
+	username: string;
+	firstMessageTimestamp: number;
+}
+
 function Bundle(nodecg: NodeCG) {
 	const twitchCredentials: Replicant<TwitchCredentials> = nodecg.Replicant('twitchCredentials', {
 		defaultValue: {
@@ -75,6 +80,20 @@ function Bundle(nodecg: NodeCG) {
 			});
 		});
 	};
+
+	const twitchHello: Replicant<TwitchHello[]> = nodecg.Replicant('twitchHello', {defaultValue: []});
+	const twitchHelloIgnore: Replicant<string[]> = nodecg.Replicant('twitchHelloIgnore', {defaultValue: []});
+
+	const checkHello = (message: any) => {
+		const userIndex = twitchHello.value.findIndex(e => e.username === message.username);
+		if (userIndex >= 0) return;
+		if (twitchHelloIgnore.value.includes(message.username)) return;
+		twitchHello.value.push({
+			username: message.username,
+			firstMessageTimestamp: message.messageTime,
+		});
+	}
+
 	const manageTwitchChatMessages = (channel: string, user: string, message: string, msg: TwitchPrivateMessage) => {
 		if (channel === `#${twitchCredentials.value.connectedAs.name}`) {
 			if (twitchChat.value.length > 50) {
@@ -90,6 +109,7 @@ function Bundle(nodecg: NodeCG) {
 			}
 			// @ts-ignore we've got slightly more than ChatMessageData but shh
 			twitchChat.value.push(savedMessage);
+			checkHello(savedMessage);
 		}
 	};
 
