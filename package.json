@@ -94,10 +94,10 @@
     "webpack-node-externals": "^2.5.2"
   },
   "dependencies": {
-    "@twurple/api": "^5.0.0",
-    "@twurple/auth": "^5.0.0",
-    "@twurple/chat": "^5.0.0",
-    "@twurple/pubsub": "^5.0.0",
+    "@twurple/api": "^5.1.6",
+    "@twurple/auth": "^5.1.6",
+    "@twurple/chat": "^5.1.6",
+    "@twurple/pubsub": "^5.1.6",
     "urijs": "^1.19.6"
   }
 }
