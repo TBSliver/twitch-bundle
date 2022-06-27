@@ -9,7 +9,7 @@ import {
 	TwitchEvent,
 	TwitchPubSubListeners
 } from "./types";
-import {ApiClient} from "@twurple/api";
+import {ApiClient, HelixChatBadgeSet} from "@twurple/api";
 import {SingleUserPubSubClient} from '@twurple/pubsub';
 import {ChatClient} from '@twurple/chat';
 import {ParsedMessagePart} from '@twurple/common';
@@ -47,10 +47,11 @@ function Bundle(nodecg: NodeCG) {
 	nodecg.Replicant<{ [id: string]: TwitchClip }>('twitchSelectedClips', {defaultValue: {}});
 
 	let twitchClient: ApiClient;
-	let twitchPubSubClient;
+	let twitchPubSubClient: SingleUserPubSubClient;
 	let twitchChatClient;
 	let twitchPubSubListeners: TwitchPubSubListeners = {};
 	let twitchChatClientListeners: TwitchChatClientListeners = {};
+	let twitchChatBadges: { [name: string]: HelixChatBadgeSet } = {};
 
 	const addTwitchPubSubEvent = (messageName: string) => (data: PubSubEventMessage) => {
 		nodecg.log.info(`Received message ${messageName}`);
@@ -94,6 +95,18 @@ function Bundle(nodecg: NodeCG) {
 		});
 	}
 
+	const getChatBadgeArray = (badgeMap: Map<string, string>) => {
+		let badgeArray: string[] = [];
+		badgeMap.forEach((badgeVer, badgeName) => {
+			const badge = twitchChatBadges[badgeName];
+			if (badge) {
+				const version = badge.getVersion(badgeVer);
+				badgeArray.push(version.getImageUrl(1));
+			}
+		})
+		return badgeArray;
+	}
+
 	const manageTwitchChatMessages = (channel: string, user: string, message: string, msg: TwitchPrivateMessage) => {
 		if (channel === `#${twitchCredentials.value.connectedAs.name}`) {
 			if (twitchChat.value.length > 50) {
@@ -103,6 +116,8 @@ function Bundle(nodecg: NodeCG) {
 				...msg,
 				rawMessage: message,
 				username: msg.userInfo.displayName,
+				user_colour: msg.userInfo.color,
+				user_badges: getChatBadgeArray(msg.userInfo.badges),
 				parsedMessage: msg.parseEmotes(),
 				messageId: msg.id,
 				messageTime: new Date().getTime(),
@@ -205,14 +220,20 @@ function Bundle(nodecg: NodeCG) {
 		twitchChatClientListeners.onTimeout = twitchChatClient.onTimeout(onChatUserTimeout);
 		await twitchChatClient.connect();
 
+		const globalBadges = await twitchClient.chat.getGlobalBadges();
+		const channelBadges = await twitchClient.chat.getChannelBadges(twitchCredentials.value.connectedAs);
+
+		globalBadges.forEach(b => twitchChatBadges[b.id] = b);
+		channelBadges.forEach(b => twitchChatBadges[b.id] = b);
+
 		updateTwitchClips();
 	}
 
 	const onTwitchAuthLogout = async () => {
-		await twitchPubSubListeners.onBits.remove();
-		await twitchPubSubListeners.onSubscription.remove();
-		await twitchPubSubListeners.onRedemption.remove();
-		await twitchPubSubListeners.onBitsBadgeUnlock.remove();
+		twitchPubSubListeners.onBits = undefined;
+		twitchPubSubListeners.onSubscription = undefined;
+		twitchPubSubListeners.onRedemption = undefined;
+		twitchPubSubListeners.onBitsBadgeUnlock = undefined;
 		twitchCredentials.value.isConnected = false;
 		delete twitchCredentials.value.connectedAs;
 		twitchPubSubClient = undefined;
