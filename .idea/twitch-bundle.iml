@@ -8,6 +8,7 @@
       <excludeFolder url="file://$MODULE_DIR$/.idea/libraries" />
       <excludeFolder url="file://$MODULE_DIR$/graphics" />
       <excludeFolder url="file://$MODULE_DIR$/dashboard" />
+      <excludeFolder url="file://$MODULE_DIR$/extension" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
