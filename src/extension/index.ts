@@ -1,5 +1,5 @@
 import {RefreshingAuthProvider} from '@twurple/auth';
-import {NodeCG, Replicant} from '../../../../types/server';
+import NodeCG from 'nodecg/types';
 import {getTwitchAuthRouter} from "./router/twitch-auth";
 import {
 	PubSubEventMessage,
@@ -28,8 +28,8 @@ interface TwitchHello {
 	firstMessageTimestamp: number;
 }
 
-function Bundle(nodecg: NodeCG) {
-	const twitchCredentials: Replicant<TwitchCredentials> = nodecg.Replicant('twitchCredentials', {
+function Bundle(nodecg: NodeCG.ServerAPI) {
+	const twitchCredentials: NodeCG.ServerReplicant<TwitchCredentials> = nodecg.Replicant('twitchCredentials', {
 		defaultValue: {
 			clientId: '',
 			clientSecret: '',
@@ -41,9 +41,9 @@ function Bundle(nodecg: NodeCG) {
 			isConnected: false,
 		}
 	});
-	const twitchEvents: Replicant<TwitchEvent[]> = nodecg.Replicant('twitchEvents', {defaultValue: []});
-	const twitchClips: Replicant<TwitchClip[]> = nodecg.Replicant('twitchClips', {defaultValue: []});
-	const twitchChat: Replicant<ChatMessageData[]> = nodecg.Replicant('twitchChat', {defaultValue: []});
+	const twitchEvents: NodeCG.ServerReplicant<TwitchEvent[]> = nodecg.Replicant('twitchEvents', {defaultValue: []});
+	const twitchClips: NodeCG.ServerReplicant<TwitchClip[]> = nodecg.Replicant('twitchClips', {defaultValue: []});
+	const twitchChat: NodeCG.ServerReplicant<ChatMessageData[]> = nodecg.Replicant('twitchChat', {defaultValue: []});
 	nodecg.Replicant<{ [id: string]: TwitchClip }>('twitchSelectedClips', {defaultValue: {}});
 
 	let twitchClient: ApiClient;
@@ -82,8 +82,8 @@ function Bundle(nodecg: NodeCG) {
 		});
 	};
 
-	const twitchHello: Replicant<TwitchHello[]> = nodecg.Replicant('twitchHello', {defaultValue: []});
-	const twitchHelloIgnore: Replicant<string[]> = nodecg.Replicant('twitchHelloIgnore', {defaultValue: []});
+	const twitchHello: NodeCG.ServerReplicant<TwitchHello[]> = nodecg.Replicant('twitchHello', {defaultValue: []});
+	const twitchHelloIgnore: NodeCG.ServerReplicant<string[]> = nodecg.Replicant('twitchHelloIgnore', {defaultValue: []});
 
 	const checkHello = (message: any) => {
 		const userIndex = twitchHello.value.findIndex(e => e.username === message.username);
@@ -162,8 +162,8 @@ function Bundle(nodecg: NodeCG) {
 		});
 	};
 
-	const twitchSubs: Replicant<{ username: string }[]> = nodecg.Replicant('twitchSubscribers', {defaultValue: []});
-	const twitchFollows: Replicant<{ username: string }[]> = nodecg.Replicant('twitchFollowers', {defaultValue: []});
+	const twitchSubs: NodeCG.ServerReplicant<{ username: string }[]> = nodecg.Replicant('twitchSubscribers', {defaultValue: []});
+	const twitchFollows: NodeCG.ServerReplicant<{ username: string }[]> = nodecg.Replicant('twitchFollowers', {defaultValue: []});
 
 	nodecg.listenFor('refreshCredits', async (_val, ack) => {
 		nodecg.log.info('refreshCredits');

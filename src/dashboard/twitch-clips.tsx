@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {render} from 'react-dom';
+import {createRoot} from "react-dom/client";
 import './twitch-clips.css';
 import {useReplicant} from "use-nodecg";
 import {TwitchClip} from "../extension/types";
@@ -11,7 +11,7 @@ function App() {
 	const [videoReplicant] = useReplicant<TwitchClip[]>('twitchClips', []);
 	const [selectedClipsReplicant, setSelectedClipsReplicant] = useReplicant<{ [id: string]: TwitchClip }>('twitchSelectedClips', {});
 	const [showSelected, setShowSelected] = useState(false);
-	const videoRef = useRef<HTMLVideoElement>();
+	const videoRef = useRef<HTMLVideoElement>(null);
 	const prevUrl = useRef<string>(myVideo);
 
 	const showVideo = (video: TwitchClip) => () => {
@@ -111,4 +111,5 @@ function SelectedVideoInfo(
 }
 
 const rootElement = document.getElementById('app');
-render(<App/>, rootElement);
+const root = createRoot(rootElement);
+root.render(<App/>);

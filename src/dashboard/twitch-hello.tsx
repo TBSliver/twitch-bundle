@@ -1,4 +1,4 @@
-import {render} from "react-dom";
+import {createRoot} from "react-dom/client";
 import React, {ChangeEvent, useState} from "react";
 import {useReplicant} from "use-nodecg";
 import './twitch-hello.css';
@@ -89,4 +89,5 @@ export function App() {
 }
 
 const rootElement = document.getElementById('app');
-render(<App/>, rootElement);
+const root = createRoot(rootElement);
+root.render(<App/>);

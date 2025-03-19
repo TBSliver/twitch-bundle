@@ -1,5 +1,5 @@
-import React, {useEffect, useState} from 'react';
-import {render} from 'react-dom';
+import React from 'react';
+import {createRoot} from "react-dom/client";
 import './twitch-chat.css';
 import {useReplicant} from "use-nodecg";
 import {ParsedMessagePart} from '@twurple/common';
@@ -48,4 +48,5 @@ function App() {
 }
 
 const rootElement = document.getElementById('app');
-render(<App/>, rootElement);
+const root = createRoot(rootElement);
+root.render(<App/>);

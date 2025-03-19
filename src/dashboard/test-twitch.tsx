@@ -1,5 +1,5 @@
 import React, {ChangeEvent, useState} from 'react';
-import {render} from 'react-dom';
+import {createRoot} from "react-dom/client";
 import './test-twitch.css';
 import {DownChevronIcon} from "./components/icon";
 import {PubSubBitsMessageContent} from "@twurple/pubsub/lib/Messages/PubSubBitsMessage";
@@ -180,4 +180,5 @@ function App() {
 }
 
 const rootElement = document.getElementById('app');
-render(<App/>, rootElement);
+const root = createRoot(rootElement);
+root.render(<App/>);

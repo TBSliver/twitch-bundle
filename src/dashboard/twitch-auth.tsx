@@ -1,6 +1,5 @@
-/// <reference path="../../../../types/browser.d.ts" />
 import React, {FormEvent, useEffect, useState} from 'react';
-import {render} from 'react-dom';
+import {createRoot} from "react-dom/client";
 import {useReplicant} from 'use-nodecg';
 import './twitch-auth.css';
 import {TwitchCredentials} from "../extension/types";
@@ -51,4 +50,5 @@ export function App() {
 }
 
 const rootElement = document.getElementById('app');
-render(<App />, rootElement);
+const root = createRoot(rootElement);
+root.render(<App />);
