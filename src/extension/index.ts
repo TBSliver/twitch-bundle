@@ -172,7 +172,7 @@ function Bundle(nodecg: NodeCG.ServerAPI) {
 		twitchSubs.value = subs.data
 			.filter(v => v.userName !== twitchCredentials.value.connectedAs.name)
 			.map(v => ({username: v.userDisplayName}));
-		const followResult = twitchClient.users.getFollowsPaginated({followedUser: twitchCredentials.value.connectedAs});
+		const followResult = twitchClient.channels.getChannelFollowersPaginated(twitchCredentials.value.connectedAs);
 		twitchFollows.value = await followResult.getAll()
 			.then(r => r.map(f => ({username: f.userDisplayName})));
 		// @ts-ignore
@@ -186,16 +186,16 @@ function Bundle(nodecg: NodeCG.ServerAPI) {
 			{
 				clientId,
 				clientSecret,
-				onRefresh: async tokens => {
-					nodecg.log.info('Refreshing Twitch Credentials');
-					twitchCredentials.value.accessToken = tokens.accessToken;
-					twitchCredentials.value.refreshToken = tokens.refreshToken;
-					twitchCredentials.value.expiresIn = tokens.expiresIn;
-					twitchCredentials.value.obtainmentTimestamp = tokens.obtainmentTimestamp;
-				}
 			},
 			twitchCredentials.value,
 		);
+		authProvider.onRefresh((userId, token) => {
+			nodecg.log.info('Refreshing Twitch Credentials');
+			twitchCredentials.value.accessToken = token.accessToken;
+			twitchCredentials.value.refreshToken = token.refreshToken;
+			twitchCredentials.value.expiresIn = token.expiresIn;
+			twitchCredentials.value.obtainmentTimestamp = token.obtainmentTimestamp;
+		});
 		twitchClient = new ApiClient({authProvider});
 		await twitchClient.users.getMe().then(r => {
 			twitchCredentials.value.connectedAs = {id: r.id, name: r.name};
