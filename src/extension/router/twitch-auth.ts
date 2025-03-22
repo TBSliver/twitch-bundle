@@ -1,62 +1,106 @@
-import {NodeCG, Replicant} from "../../../../../types/server";
 import URI from "urijs";
-import {TwitchCredentials} from "../types";
-import fetch from 'node-fetch';
+import {BundleAPI} from "../types-server";
+import NodeCG from "nodecg/types";
+import {randomBytes} from "crypto";
+import {Request, Response} from "express";
+import {RefreshingAuthProvider} from "@twurple/auth";
 
-export function getTwitchAuthRouter(nodecg: NodeCG, twitchCredentials: Replicant<TwitchCredentials>, onAuthSuccess: () => void) {
-	// @ts-ignore
-	const router = nodecg.Router();
+let auth_state: { [state: string]: number } = {};
 
-	router.get('/authorize', nodecg.util.authCheck, (req: any, res: any) => {
-		const uri = new URI('https://id.twitch.tv/oauth2/authorize')
-			.addSearch("client_id", twitchCredentials.value.clientId)
-			.addSearch("redirect_uri", getCallbackUrl(nodecg))
-			.addSearch("response_type", "code")
-			.addSearch("force_verify", "true")
-			.addSearch("scope", "channel:read:subscriptions bits:read channel:read:redemptions channel_subscriptions chat:read chat:edit");
-
-		res.redirect(uri.toString());
-	});
-
-	router.get('/callback', (req: any, res: any) => {
-		const uri = new URI('https://id.twitch.tv/oauth2/token')
-			.addSearch("client_id", twitchCredentials.value.clientId)
-			.addSearch("client_secret", twitchCredentials.value.clientSecret)
-			.addSearch("code", req.query.code)
-			.addSearch("redirect_uri", getCallbackUrl(nodecg))
-			.addSearch("grant_type", "authorization_code");
-
-		fetch(uri.toString(),
-			{method: 'POST'})
-			.then(res => res.json())
-			.then(json => {
-				twitchCredentials.value.accessToken = json.access_token;
-				twitchCredentials.value.refreshToken = json.refresh_token;
-				res.send('Success, you can now close this window!');
-				onAuthSuccess();
-			});
-	});
-
-	// @ts-ignore
-	nodecg.listenFor('getAuthorizeUrl', (v, ack) => ack(null, getAuthorizeUrl(nodecg)));
-	// @ts-ignore
-	nodecg.listenFor('getCallbackUrl', (v, ack) => ack(null, getCallbackUrl(nodecg)));
-
-	return router;
+// Loop through and expire any state tokens
+function expireStates(): void {
+    for (let state in auth_state)
+        if (auth_state[state] > Date.now())
+            delete auth_state[state];
 }
 
-function getCallbackUrl(nodecg: NodeCG) {
-	return new URI()
-		.protocol(nodecg.config.ssl?.enabled ? 'https' : 'http')
-		.host(nodecg.config.baseURL)
-		.path(`${nodecg.bundleName}/callback`)
-		.toString();
+// Adds and returns a new state token with expiry time
+function addState(): string {
+    const new_state = randomBytes(64).toString('hex');
+
+    // 15 minutes should be enough time to authenticate
+    auth_state[new_state] = Date.now() + (15 * 60 * 1000);
+
+    // Also expire any states which are too old
+    expireStates();
+
+    return new_state;
 }
 
-function getAuthorizeUrl(nodecg: NodeCG) {
-	return new URI()
-		.protocol(nodecg.config.ssl?.enabled ? 'https' : 'http')
-		.host(nodecg.config.baseURL)
-		.path(`${nodecg.bundleName}/authorize`)
-		.toString();
+// Check a particular state token. Will expire as part of the call
+function checkState(state: string): boolean {
+    let check = false;
+
+    // Check if actually a valid state
+    if (auth_state[state] < Date.now())
+        check = true;
+
+    // Delete it because it's been used
+    delete auth_state[state];
+
+    // Also expire any old states
+    expireStates();
+
+    return check;
+}
+
+interface CallbackQueryParams {
+    state: string;
+    code: string;
+}
+
+export function getTwitchAuthRouter(nodecg: BundleAPI, authProvider: RefreshingAuthProvider) {
+    // @ts-ignore
+    const router = nodecg.Router();
+
+    // Redirect to Twitch's actual authorization endpoint
+    // This has auth check so you must already be authenticated to NodeCG
+    router.get('/authorize', nodecg.util.authCheck, (_req: Request, res: Response) => {
+
+        const uri = new URI('https://id.twitch.tv/oauth2/authorize')
+            .addSearch("client_id", nodecg.bundleConfig.twitchClientId)
+            .addSearch("redirect_uri", getCallbackUrl(nodecg))
+            .addSearch("response_type", "code")
+            .addSearch("force_verify", "true")
+            .addSearch("scope", "channel:read:subscriptions bits:read channel:read:redemptions channel_subscriptions chat:read chat:edit")
+            .addSearch("state", addState());
+
+        res.redirect(uri.toString());
+    });
+
+    // Receive redirect from twitch with code to swap out
+    router.get('/callback', async (req: Request<{}, {}, {}, CallbackQueryParams>, res: Response) => {
+        // Fail out early when not a known state
+        if (!checkState(req.query.state)) {
+            res.status(401).send('Unauthorised');
+        } else {
+            await authProvider.addUserForCode(req.query.code);
+            res.send('Success, you can now close this window!');
+        }
+    });
+
+    // TODO can we get rid of these?
+    // Probably, but need to output them somewhere sensible - maybe bundle logs during init?
+    nodecg.listenFor('getAuthorizeUrl', (_v, ack) => ack.handled || (<NodeCG.UnhandledAcknowledgement>ack)(null, getAuthorizeUrl(nodecg)));
+    nodecg.listenFor('getCallbackUrl', (_v, ack) => ack.handled || (<NodeCG.UnhandledAcknowledgement>ack)(null, getCallbackUrl(nodecg)));
+
+    nodecg.mount(`/${nodecg.bundleName}`, router);
+
+    return router;
+}
+
+export function getCallbackUrl(nodecg: BundleAPI) {
+    return new URI()
+        .protocol(nodecg.config.ssl?.enabled ? 'https' : 'http')
+        .host(nodecg.config.baseURL)
+        .path(`${nodecg.bundleName}/callback`)
+        .toString();
+}
+
+export function getAuthorizeUrl(nodecg: BundleAPI) {
+    return new URI()
+        .protocol(nodecg.config.ssl?.enabled ? 'https' : 'http')
+        .host(nodecg.config.baseURL)
+        .path(`${nodecg.bundleName}/authorize`)
+        .toString();
 }
