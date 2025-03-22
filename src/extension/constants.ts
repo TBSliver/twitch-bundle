@@ -1,0 +1,1 @@
+export const TWITCH_CREDENTIAL_REPLICANT = 'twitchCredentials';
