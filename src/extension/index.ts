@@ -1,151 +1,141 @@
 import NodeCG from 'nodecg/types';
 import {getTwitchAuthRouter} from "./router/twitch-auth";
 import {
-	PubSubEventMessage,
-	TwitchClip,
-	TwitchEvent,
-	TwitchPubSubListeners
+    PubSubEventMessage,
+    TwitchClip,
+    TwitchEvent,
+    TwitchPubSubListeners
 } from "./types";
 import {ApiClient, HelixChatBadgeSet} from "@twurple/api";
 import {SingleUserPubSubClient} from '@twurple/pubsub';
 import {rawDataSymbol} from '@twurple/common';
 import {BundleAPI} from "./types-server";
 import {getAuthProvider} from "./auth-provider";
-import {getTwitchCredentialReplicant, getTwitchHelloReplicant} from "./replicants";
+import {getTwitchCredentialReplicant} from "./replicants";
 import {getChatClient} from "./chat-client";
 
 function Bundle(nodecg: BundleAPI) {
 
-	// Initialise Credentials Replicants
-	const twitchCredentials = getTwitchCredentialReplicant(nodecg);
-	const twitchEvents: NodeCG.ServerReplicant<TwitchEvent[]> = nodecg.Replicant('twitchEvents', {defaultValue: []});
-	const twitchClips: NodeCG.ServerReplicant<TwitchClip[]> = nodecg.Replicant('twitchClips', {defaultValue: []});
-	nodecg.Replicant<{ [id: string]: TwitchClip }>('twitchSelectedClips', {defaultValue: {}});
+    // Initialise Credentials Replicants
+    const twitchCredentials = getTwitchCredentialReplicant(nodecg);
+    const twitchEvents: NodeCG.ServerReplicant<TwitchEvent[]> = nodecg.Replicant('twitchEvents', {defaultValue: []});
+    const twitchClips: NodeCG.ServerReplicant<TwitchClip[]> = nodecg.Replicant('twitchClips', {defaultValue: []});
+    nodecg.Replicant<{ [id: string]: TwitchClip }>('twitchSelectedClips', {defaultValue: {}});
 
-	// Initialise Twitch API connection
-	const authProvider = getAuthProvider(nodecg);
-	const twitchClient = new ApiClient({authProvider});
+    // Initialise Twitch API connection
+    const authProvider = getAuthProvider(nodecg);
+    const twitchClient = new ApiClient({authProvider});
 
-	// Also fetch the user id and set it up as needed
-	authProvider.onRefresh((userId, _t) => {
-		twitchClient.users.getUserById(userId).then(v => {
-			twitchCredentials.value[userId].name = v.displayName
-		})
-	});
+    // Also fetch the user id and set it up as needed
+    authProvider.onRefresh((userId, _t) => {
+        twitchClient.users.getUserById(userId).then(v => {
+            twitchCredentials.value[userId].name = v.displayName
+        })
+    });
 
-	// Initialise Twitch Auth Callbacks
-	getTwitchAuthRouter(nodecg, authProvider);
+    // Initialise Twitch Auth Callbacks
+    getTwitchAuthRouter(nodecg, authProvider);
 
-	// Setup Twitch Chat integration
-	getChatClient(nodecg);
+    // Setup Twitch Chat integration
+    getChatClient(nodecg);
 
-	let twitchPubSubClient: SingleUserPubSubClient;
-	let twitchPubSubListeners: TwitchPubSubListeners = {};
-	let twitchChatBadges: { [name: string]: HelixChatBadgeSet } = {};
+    let twitchPubSubClient: SingleUserPubSubClient;
+    let twitchPubSubListeners: TwitchPubSubListeners = {};
+    let twitchChatBadges: { [name: string]: HelixChatBadgeSet } = {};
 
-	const addTwitchPubSubEvent = (messageName: string) => (data: PubSubEventMessage) => {
-		nodecg.log.info(`Received message ${messageName}`);
-		nodecg.log.info(`Raw Data: ${JSON.stringify(data[rawDataSymbol].data, null, 4)}`);
-		twitchEvents.value.unshift({type: 'PubSub', messageName, data: data[rawDataSymbol].data});
-		nodecg.sendMessage(messageName, data[rawDataSymbol].data);
-	};
-	const clearTwitchEvents = () => {
-		twitchEvents.value = []
-	};
-	const updateTwitchClips = () => {
-		if (!twitchCredentials.value.connectedAs)
-			return;
+    const addTwitchPubSubEvent = (messageName: string) => (data: PubSubEventMessage) => {
+        nodecg.log.info(`Received message ${messageName}`);
+        nodecg.log.info(`Raw Data: ${JSON.stringify(data[rawDataSymbol].data, null, 4)}`);
+        twitchEvents.value.unshift({type: 'PubSub', messageName, data: data[rawDataSymbol].data});
+        nodecg.sendMessage(messageName, data[rawDataSymbol].data);
+    };
+    const clearTwitchEvents = () => {
+        twitchEvents.value = []
+    };
+    const updateTwitchClips = () => {
+        if (!twitchCredentials.value.connectedAs)
+            return;
 
-		twitchClient.clips.getClipsForBroadcasterPaginated(twitchCredentials.value.connectedAs).getAll().then(clips => {
-			twitchClips.value = clips.sort((a, b) => b.creationDate.getTime() - a.creationDate.getTime()).map(clip => {
-				const {id, creatorDisplayName, title, creationDate} = clip;
-				const thumbnailUrl = clip.thumbnailUrl.replace("-preview-480x272.jpg", ".mp4");
-				// nodecg.log.info('Clips: ' + thumbnailUrl);
-				return {
-					id,
-					url: thumbnailUrl,
-					creator_name: creatorDisplayName,
-					title,
-					created_at: creationDate.toISOString()
-				};
-			});
-		});
-	};
+        twitchClient.clips.getClipsForBroadcasterPaginated(twitchCredentials.value.connectedAs).getAll().then(clips => {
+            twitchClips.value = clips.sort((a, b) => b.creationDate.getTime() - a.creationDate.getTime()).map(clip => {
+                const {id, creatorDisplayName, title, creationDate} = clip;
+                const thumbnailUrl = clip.thumbnailUrl.replace("-preview-480x272.jpg", ".mp4");
+                // nodecg.log.info('Clips: ' + thumbnailUrl);
+                return {
+                    id,
+                    url: thumbnailUrl,
+                    creator_name: creatorDisplayName,
+                    title,
+                    created_at: creationDate.toISOString()
+                };
+            });
+        });
+    };
 
-	// TODO Re-hook up the TwitchHEllo stuff
-	const twitchHello = getTwitchHelloReplicant(nodecg);
-	const twitchHelloIgnore: NodeCG.ServerReplicant<string[]> = nodecg.Replicant('twitchHelloIgnore', {defaultValue: []});
+    const getChatBadgeArray = (badgeMap: Map<string, string>) => {
+        let badgeArray: string[] = [];
+        badgeMap.forEach((badgeVer, badgeName) => {
+            const badge = twitchChatBadges[badgeName];
+            if (badge) {
+                const version = badge.getVersion(badgeVer);
+                badgeArray.push(version.getImageUrl(1));
+            }
+        })
+        return badgeArray;
+    }
 
-	const checkHello = (message: any) => {
-		const userIndex = twitchHello.value.findIndex(e => e.username === message.username);
-		if (userIndex >= 0) return;
-		if (twitchHelloIgnore.value.includes(message.username)) return;
-		twitchHello.value.push({
-			username: message.username,
-			firstMessageTimestamp: message.messageTime,
-		});
-	}
+    const twitchSubs: NodeCG.ServerReplicant<{
+        username: string
+    }[]> = nodecg.Replicant('twitchSubscribers', {defaultValue: []});
+    const twitchFollows: NodeCG.ServerReplicant<{
+        username: string
+    }[]> = nodecg.Replicant('twitchFollowers', {defaultValue: []});
 
-	const getChatBadgeArray = (badgeMap: Map<string, string>) => {
-		let badgeArray: string[] = [];
-		badgeMap.forEach((badgeVer, badgeName) => {
-			const badge = twitchChatBadges[badgeName];
-			if (badge) {
-				const version = badge.getVersion(badgeVer);
-				badgeArray.push(version.getImageUrl(1));
-			}
-		})
-		return badgeArray;
-	}
+    nodecg.listenFor('refreshCredits', async (_val, ack) => {
+        nodecg.log.info('refreshCredits');
+        const subResult = twitchClient.subscriptions.getSubscriptions(twitchCredentials.value.connectedAs);
+        const subs = await subResult;
+        twitchSubs.value = subs.data
+            .filter(v => v.userName !== twitchCredentials.value.connectedAs.name)
+            .map(v => ({username: v.userDisplayName}));
+        const followResult = twitchClient.channels.getChannelFollowersPaginated(twitchCredentials.value.connectedAs);
+        twitchFollows.value = await followResult.getAll()
+            .then(r => r.map(f => ({username: f.userDisplayName})));
+        // @ts-ignore
+        ack(null, 'complete');
+    });
 
-	const twitchSubs: NodeCG.ServerReplicant<{ username: string }[]> = nodecg.Replicant('twitchSubscribers', {defaultValue: []});
-	const twitchFollows: NodeCG.ServerReplicant<{ username: string }[]> = nodecg.Replicant('twitchFollowers', {defaultValue: []});
+    const onTwitchAuthSuccess = async () => {
+        twitchPubSubClient = new SingleUserPubSubClient({authProvider});
+        twitchPubSubListeners.onBits = await twitchPubSubClient.onBits(addTwitchPubSubEvent('bits'));
+        // Currently not used on frontend, will need to make custom event manager
+        // twitchPubSubListeners.onSubscription = await twitchPubSubClient.onSubscription(addTwitchPubSubEvent('subscription'));
+        twitchPubSubListeners.onRedemption = await twitchPubSubClient.onRedemption(addTwitchPubSubEvent('redemption'));
+        twitchPubSubListeners.onBitsBadgeUnlock = await twitchPubSubClient.onBitsBadgeUnlock(addTwitchPubSubEvent('bitsBadgeUnlock'));
 
-	nodecg.listenFor('refreshCredits', async (_val, ack) => {
-		nodecg.log.info('refreshCredits');
-		const subResult = twitchClient.subscriptions.getSubscriptions(twitchCredentials.value.connectedAs);
-		const subs = await subResult;
-		twitchSubs.value = subs.data
-			.filter(v => v.userName !== twitchCredentials.value.connectedAs.name)
-			.map(v => ({username: v.userDisplayName}));
-		const followResult = twitchClient.channels.getChannelFollowersPaginated(twitchCredentials.value.connectedAs);
-		twitchFollows.value = await followResult.getAll()
-			.then(r => r.map(f => ({username: f.userDisplayName})));
-		// @ts-ignore
-		ack(null, 'complete');
-	});
+        const globalBadges = await twitchClient.chat.getGlobalBadges();
+        const channelBadges = await twitchClient.chat.getChannelBadges(twitchCredentials.value.connectedAs);
 
-	const onTwitchAuthSuccess = async () => {
-		twitchPubSubClient = new SingleUserPubSubClient({authProvider});
-		twitchPubSubListeners.onBits = await twitchPubSubClient.onBits(addTwitchPubSubEvent('bits'));
-		// Currently not used on frontend, will need to make custom event manager
-		// twitchPubSubListeners.onSubscription = await twitchPubSubClient.onSubscription(addTwitchPubSubEvent('subscription'));
-		twitchPubSubListeners.onRedemption = await twitchPubSubClient.onRedemption(addTwitchPubSubEvent('redemption'));
-		twitchPubSubListeners.onBitsBadgeUnlock = await twitchPubSubClient.onBitsBadgeUnlock(addTwitchPubSubEvent('bitsBadgeUnlock'));
+        globalBadges.forEach(b => twitchChatBadges[b.id] = b);
+        channelBadges.forEach(b => twitchChatBadges[b.id] = b);
 
-		const globalBadges = await twitchClient.chat.getGlobalBadges();
-		const channelBadges = await twitchClient.chat.getChannelBadges(twitchCredentials.value.connectedAs);
+        updateTwitchClips();
+    }
 
-		globalBadges.forEach(b => twitchChatBadges[b.id] = b);
-		channelBadges.forEach(b => twitchChatBadges[b.id] = b);
+    const onTwitchAuthLogout = async () => {
+        twitchPubSubListeners.onBits = undefined;
+        twitchPubSubListeners.onSubscription = undefined;
+        twitchPubSubListeners.onRedemption = undefined;
+        twitchPubSubListeners.onBitsBadgeUnlock = undefined;
+        delete twitchCredentials.value.connectedAs;
+        twitchPubSubClient = undefined;
+    }
 
-		updateTwitchClips();
-	}
+    nodecg.listenFor('logoutTwitch', onTwitchAuthLogout);
+    nodecg.listenFor('clearTwitchEvents', clearTwitchEvents);
+    nodecg.listenFor('updateTwitchClips', updateTwitchClips);
 
-	const onTwitchAuthLogout = async () => {
-		twitchPubSubListeners.onBits = undefined;
-		twitchPubSubListeners.onSubscription = undefined;
-		twitchPubSubListeners.onRedemption = undefined;
-		twitchPubSubListeners.onBitsBadgeUnlock = undefined;
-		delete twitchCredentials.value.connectedAs;
-		twitchPubSubClient = undefined;
-	}
-
-	nodecg.listenFor('logoutTwitch', onTwitchAuthLogout);
-	nodecg.listenFor('clearTwitchEvents', clearTwitchEvents);
-	nodecg.listenFor('updateTwitchClips', updateTwitchClips);
-
-	if (twitchCredentials.value.isConnected) onTwitchAuthSuccess().then(() => nodecg.log.info('Reconnected to Twitch'));
+    if (twitchCredentials.value.isConnected) onTwitchAuthSuccess().then(() => nodecg.log.info('Reconnected to Twitch'));
 }
 
 // noinspection JSUnusedGlobalSymbols

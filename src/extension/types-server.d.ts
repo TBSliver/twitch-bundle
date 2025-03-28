@@ -5,3 +5,4 @@ type ReplicantTwitchCredentials = NodeCG.ServerReplicant<TwitchCredentials>;
 type BundleAPI = NodeCG.ServerAPI<BundleConfig>;
 type ReplicantTwitchChat = NodeCG.ServerReplicant<ChatMessageData[]>;
 type ReplicantTwitchHello = NodeCG.ServerReplicant<TwitchHello[]>;
+type ReplicantTwitchHelloIgnore = NodeCG.ServerReplicant<string[]>;
