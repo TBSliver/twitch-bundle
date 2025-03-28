@@ -35,7 +35,7 @@ function Bundle(nodecg: BundleAPI) {
     getTwitchAuthRouter(nodecg, authProvider);
 
     // Setup Twitch Chat integration
-    getChatClient(nodecg);
+    getChatClient(nodecg, twitchClient);
 
     // Setup Clips Manager
     getClipsManager(nodecg, twitchClient);
@@ -55,7 +55,6 @@ function Bundle(nodecg: BundleAPI) {
 
     let twitchPubSubClient: SingleUserPubSubClient;
     let twitchPubSubListeners: TwitchPubSubListeners = {};
-    let twitchChatBadges: { [name: string]: HelixChatBadgeSet } = {};
 
     const addTwitchPubSubEvent = (messageName: string) => (data: PubSubEventMessage) => {
         nodecg.log.info(`Received message ${messageName}`);
@@ -66,18 +65,6 @@ function Bundle(nodecg: BundleAPI) {
     const clearTwitchEvents = () => {
         twitchEvents.value = []
     };
-
-    const getChatBadgeArray = (badgeMap: Map<string, string>) => {
-        let badgeArray: string[] = [];
-        badgeMap.forEach((badgeVer, badgeName) => {
-            const badge = twitchChatBadges[badgeName];
-            if (badge) {
-                const version = badge.getVersion(badgeVer);
-                badgeArray.push(version.getImageUrl(1));
-            }
-        })
-        return badgeArray;
-    }
 
     const twitchSubs: NodeCG.ServerReplicant<{
         username: string
@@ -107,12 +94,6 @@ function Bundle(nodecg: BundleAPI) {
         // twitchPubSubListeners.onSubscription = await twitchPubSubClient.onSubscription(addTwitchPubSubEvent('subscription'));
         twitchPubSubListeners.onRedemption = await twitchPubSubClient.onRedemption(addTwitchPubSubEvent('redemption'));
         twitchPubSubListeners.onBitsBadgeUnlock = await twitchPubSubClient.onBitsBadgeUnlock(addTwitchPubSubEvent('bitsBadgeUnlock'));
-
-        const globalBadges = await twitchClient.chat.getGlobalBadges();
-        const channelBadges = await twitchClient.chat.getChannelBadges(twitchCredentials.value.connectedAs);
-
-        globalBadges.forEach(b => twitchChatBadges[b.id] = b);
-        channelBadges.forEach(b => twitchChatBadges[b.id] = b);
     }
 
     const onTwitchAuthLogout = async () => {
@@ -125,8 +106,6 @@ function Bundle(nodecg: BundleAPI) {
 
     nodecg.listenFor('logoutTwitch', onTwitchAuthLogout);
     nodecg.listenFor('clearTwitchEvents', clearTwitchEvents);
-
-    if (twitchCredentials.value.isConnected) onTwitchAuthSuccess().then(() => nodecg.log.info('Reconnected to Twitch'));
 }
 
 // noinspection JSUnusedGlobalSymbols

@@ -8,3 +8,4 @@ export const TWITCH_SELECTED_CLIPS_REPLICANT = 'twitchSelectedClips';
 
 // sendMessage and listenFor names
 export const UPDATE_TWITCH_CLIPS_MESSAGE = 'updateTwitchClips';
+export const UPDATE_TWITCH_CHAT_BADGES_MESSAGE = 'updateTwitchChatBadges';

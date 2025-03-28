@@ -2,11 +2,41 @@ import {BundleAPI} from "./types-server";
 import {ChatClient, ChatMessage, parseChatMessage} from "@twurple/chat";
 import {getTwitchChatReplicant, getTwitchHelloIgnoreReplicant, getTwitchHelloReplicant} from "./replicants";
 import {ChatMessageData} from "./types-common";
+import {ApiClient, HelixChatBadgeSet} from "@twurple/api";
+import {UPDATE_TWITCH_CHAT_BADGES_MESSAGE} from "./constants";
 
-export function getChatClient(nodecg: BundleAPI): ChatClient {
+export function getChatClient(nodecg: BundleAPI, twitchClient: ApiClient): ChatClient {
     const twitchChat = getTwitchChatReplicant(nodecg);
     const twitchHello = getTwitchHelloReplicant(nodecg);
     const twitchHelloIgnore = getTwitchHelloIgnoreReplicant(nodecg);
+
+    let twitchChatBadges: { [name: string]: HelixChatBadgeSet } = {};
+
+    // Collect global and channel badges
+    const updateChatBadges = async () => {
+        const globalBadges = await twitchClient.chat.getGlobalBadges();
+        const channelBadges = await twitchClient.chat.getChannelBadges(nodecg.bundleConfig.twitchChatChannel);
+
+        globalBadges.forEach(b => twitchChatBadges[b.id] = b);
+        channelBadges.forEach(b => twitchChatBadges[b.id] = b);
+    }
+
+    if (Object.keys(twitchChatBadges).length == 0)
+        updateChatBadges().then(() => nodecg.log.info("Updated Chat Badges"));
+
+    nodecg.listenFor(UPDATE_TWITCH_CHAT_BADGES_MESSAGE, updateChatBadges);
+
+    const getChatBadgeArray = (badgeMap: Map<string, string>) => {
+        let badgeArray: string[] = [];
+        badgeMap.forEach((badgeVer, badgeName) => {
+            const badge = twitchChatBadges[badgeName];
+            if (badge) {
+                const version = badge.getVersion(badgeVer);
+                badgeArray.push(version.getImageUrl(1));
+            }
+        })
+        return badgeArray;
+    }
 
     // Setup for anonymous connection
     const twitchChatClient = new ChatClient({channels: [nodecg.bundleConfig.twitchChatChannel]});
@@ -24,7 +54,7 @@ export function getChatClient(nodecg: BundleAPI): ChatClient {
                 username: msg.userInfo.displayName,
                 messageTime: msg.date.getTime(),
                 user_colour: msg.userInfo.color,
-                user_badges: [],
+                user_badges: getChatBadgeArray(msg.userInfo.badges),
                 parsedMessage: parseChatMessage(msg.text, msg.emoteOffsets)
             }
             twitchChat.value.push(savedMessage);
