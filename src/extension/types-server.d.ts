@@ -1,7 +1,7 @@
 import NodeCG from "nodecg/types";
 import {
     BundleConfig,
-    ChatMessageData,
+    ChatMessageData, TwitchChannelMember,
     TwitchClip,
     TwitchCredentials,
     TwitchHello,
@@ -15,3 +15,5 @@ type ReplicantTwitchHello = NodeCG.ServerReplicant<TwitchHello[]>;
 type ReplicantTwitchHelloIgnore = NodeCG.ServerReplicant<string[]>;
 type ReplicantTwitchClips = NodeCG.ServerReplicant<TwitchClip[]>;
 type ReplicantTwitchSelectedClips = NodeCG.ServerReplicant<TwitchSelectedClips>;
+type ReplicantTwitchSubscribers = NodeCG.ServerReplicant<TwitchChannelMember[]>;
+type ReplicantTwitchFollowers = NodeCG.ServerReplicant<TwitchChannelMember[]>;

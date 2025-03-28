@@ -5,7 +5,7 @@ import {
     TwitchEvent,
     TwitchPubSubListeners
 } from "./types";
-import {ApiClient, HelixChatBadgeSet} from "@twurple/api";
+import {ApiClient} from "@twurple/api";
 import {SingleUserPubSubClient} from '@twurple/pubsub';
 import {rawDataSymbol} from '@twurple/common';
 import {BundleAPI} from "./types-server";
@@ -13,12 +13,12 @@ import {getAuthProvider} from "./auth-provider";
 import {getTwitchCredentialReplicant} from "./replicants";
 import {getChatClient} from "./chat-client";
 import {getClipsManager} from "./clips-manager";
+import {getCreditsManager} from "./credits-manager";
 
 function Bundle(nodecg: BundleAPI) {
 
     // Initialise Credentials Replicants
     const twitchCredentials = getTwitchCredentialReplicant(nodecg);
-    const twitchEvents: NodeCG.ServerReplicant<TwitchEvent[]> = nodecg.Replicant('twitchEvents', {defaultValue: []});
 
     // Initialise Twitch API connection
     const authProvider = getAuthProvider(nodecg);
@@ -40,6 +40,7 @@ function Bundle(nodecg: BundleAPI) {
     // Setup Clips Manager
     getClipsManager(nodecg, twitchClient);
 
+    getCreditsManager(nodecg, twitchClient);
 
 
 
@@ -48,7 +49,7 @@ function Bundle(nodecg: BundleAPI) {
 
 
 
-
+    const twitchEvents: NodeCG.ServerReplicant<TwitchEvent[]> = nodecg.Replicant('twitchEvents', {defaultValue: []});
 
 
 
@@ -65,27 +66,6 @@ function Bundle(nodecg: BundleAPI) {
     const clearTwitchEvents = () => {
         twitchEvents.value = []
     };
-
-    const twitchSubs: NodeCG.ServerReplicant<{
-        username: string
-    }[]> = nodecg.Replicant('twitchSubscribers', {defaultValue: []});
-    const twitchFollows: NodeCG.ServerReplicant<{
-        username: string
-    }[]> = nodecg.Replicant('twitchFollowers', {defaultValue: []});
-
-    nodecg.listenFor('refreshCredits', async (_val, ack) => {
-        nodecg.log.info('refreshCredits');
-        const subResult = twitchClient.subscriptions.getSubscriptions(twitchCredentials.value.connectedAs);
-        const subs = await subResult;
-        twitchSubs.value = subs.data
-            .filter(v => v.userName !== twitchCredentials.value.connectedAs.name)
-            .map(v => ({username: v.userDisplayName}));
-        const followResult = twitchClient.channels.getChannelFollowersPaginated(twitchCredentials.value.connectedAs);
-        twitchFollows.value = await followResult.getAll()
-            .then(r => r.map(f => ({username: f.userDisplayName})));
-        // @ts-ignore
-        ack(null, 'complete');
-    });
 
     const onTwitchAuthSuccess = async () => {
         twitchPubSubClient = new SingleUserPubSubClient({authProvider});

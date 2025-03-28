@@ -42,3 +42,7 @@ export interface TwitchClip {
 export interface TwitchSelectedClips {
     [id: string]: TwitchClip
 }
+
+export interface TwitchChannelMember {
+    username: string
+}
