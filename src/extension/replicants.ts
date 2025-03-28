@@ -1,5 +1,5 @@
-import {BundleAPI, ReplicantTwitchCredentials} from "./types-server";
-import {TWITCH_CREDENTIAL_REPLICANT} from "./constants";
+import {BundleAPI, ReplicantTwitchChat, ReplicantTwitchCredentials, ReplicantTwitchHello} from "./types-server";
+import {TWITCH_CHAT_REPLICANT, TWITCH_CREDENTIAL_REPLICANT, TWITCH_HELLO_REPLICANT} from "./constants";
 
 export function getTwitchCredentialReplicant(nodecg: BundleAPI): ReplicantTwitchCredentials {
     const twitchCredentials: ReplicantTwitchCredentials = nodecg.Replicant(TWITCH_CREDENTIAL_REPLICANT, {defaultValue: {}});
@@ -16,4 +16,12 @@ export function getTwitchCredentialReplicant(nodecg: BundleAPI): ReplicantTwitch
     delete twitchCredentials.value.obtainmentTimestamp;
 
     return twitchCredentials;
+}
+
+export function getTwitchChatReplicant(nodecg: BundleAPI): ReplicantTwitchChat {
+    return nodecg.Replicant(TWITCH_CHAT_REPLICANT, {defaultValue: []});
+}
+
+export function getTwitchHelloReplicant(nodecg: BundleAPI): ReplicantTwitchHello {
+    return nodecg.Replicant(TWITCH_HELLO_REPLICANT, {defaultValue: []});
 }

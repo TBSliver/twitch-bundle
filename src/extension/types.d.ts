@@ -11,6 +11,7 @@ import {PubSubBitsBadgeUnlockMessageContent} from "@twurple/pubsub/lib/messages/
 import type {Listener} from "@d-fischer/typed-event-emitter";
 
 export type PubSubEventMessage = PubSubBitsMessage | PubSubRedemptionMessage | PubSubBitsBadgeUnlockMessage;
+
 export type PubSubEventMessageContent =
 	PubSubBitsMessageContent
 	| PubSubRedemptionMessageContent
@@ -19,17 +20,6 @@ export type PubSubEventMessageContent =
 interface TwitchCredentialConnectedAs {
 	id: string;
 	name: string;
-}
-
-export interface TwitchCredentials {
-	isConnected: boolean;
-	connectedAs?: TwitchCredentialConnectedAs;
-	clientId: string;
-	clientSecret: string;
-	accessToken: string;
-	refreshToken: string;
-	expiresIn: number;
-	obtainmentTimestamp: number;
 }
 
 export interface TwitchPubSubListeners {

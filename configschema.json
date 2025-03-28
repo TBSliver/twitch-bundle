@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/tbsliver/twitch-bundle/configschema.json",
+  "title": "Product",
+  "description": "A product in the catalog",
+  "type": "object",
+  "properties": {
+    "twitchClientId": {
+      "description": "Client ID for Twitch Connection",
+      "type": "string"
+    },
+    "twitchClientSecret": {
+      "description": "Client Secret for Twitch Connection",
+      "type": "string"
+    },
+    "twitchTokenStore": {
+      "description": "Path to directory for storing Twitch Auth Tokens",
+      "type": "string"
+    },
+    "twitchChatChannel": {
+      "description": "Channel to connect to for chat",
+      "type": "string"
+    }
+  }
+}

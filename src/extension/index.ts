@@ -1,56 +1,46 @@
-import {RefreshingAuthProvider} from '@twurple/auth';
 import NodeCG from 'nodecg/types';
 import {getTwitchAuthRouter} from "./router/twitch-auth";
 import {
 	PubSubEventMessage,
-	TwitchChatClientListeners,
 	TwitchClip,
-	TwitchCredentials,
 	TwitchEvent,
 	TwitchPubSubListeners
 } from "./types";
 import {ApiClient, HelixChatBadgeSet} from "@twurple/api";
 import {SingleUserPubSubClient} from '@twurple/pubsub';
-import {ChatClient} from '@twurple/chat';
-import {ParsedMessagePart} from '@twurple/common';
-import {TwitchPrivateMessage} from "@twurple/chat/lib/commands/TwitchPrivateMessage";
 import {rawDataSymbol} from '@twurple/common';
+import {BundleAPI} from "./types-server";
+import {getAuthProvider} from "./auth-provider";
+import {getTwitchCredentialReplicant, getTwitchHelloReplicant} from "./replicants";
+import {getChatClient} from "./chat-client";
 
-interface ChatMessageData {
-	username: string,
-	messageTime: string,
-	messageId: string,
-	parsedMessage: [ParsedMessagePart],
-}
+function Bundle(nodecg: BundleAPI) {
 
-interface TwitchHello {
-	username: string;
-	firstMessageTimestamp: number;
-}
-
-function Bundle(nodecg: NodeCG.ServerAPI) {
-	const twitchCredentials: NodeCG.ServerReplicant<TwitchCredentials> = nodecg.Replicant('twitchCredentials', {
-		defaultValue: {
-			clientId: '',
-			clientSecret: '',
-			accessToken: undefined,
-			refreshToken: undefined,
-			expiresIn: 0,
-			obtainmentTimestamp: 0,
-			connectedAs: undefined,
-			isConnected: false,
-		}
-	});
+	// Initialise Credentials Replicants
+	const twitchCredentials = getTwitchCredentialReplicant(nodecg);
 	const twitchEvents: NodeCG.ServerReplicant<TwitchEvent[]> = nodecg.Replicant('twitchEvents', {defaultValue: []});
 	const twitchClips: NodeCG.ServerReplicant<TwitchClip[]> = nodecg.Replicant('twitchClips', {defaultValue: []});
-	const twitchChat: NodeCG.ServerReplicant<ChatMessageData[]> = nodecg.Replicant('twitchChat', {defaultValue: []});
 	nodecg.Replicant<{ [id: string]: TwitchClip }>('twitchSelectedClips', {defaultValue: {}});
 
-	let twitchClient: ApiClient;
+	// Initialise Twitch API connection
+	const authProvider = getAuthProvider(nodecg);
+	const twitchClient = new ApiClient({authProvider});
+
+	// Also fetch the user id and set it up as needed
+	authProvider.onRefresh((userId, _t) => {
+		twitchClient.users.getUserById(userId).then(v => {
+			twitchCredentials.value[userId].name = v.displayName
+		})
+	});
+
+	// Initialise Twitch Auth Callbacks
+	getTwitchAuthRouter(nodecg, authProvider);
+
+	// Setup Twitch Chat integration
+	getChatClient(nodecg);
+
 	let twitchPubSubClient: SingleUserPubSubClient;
-	let twitchChatClient;
 	let twitchPubSubListeners: TwitchPubSubListeners = {};
-	let twitchChatClientListeners: TwitchChatClientListeners = {};
 	let twitchChatBadges: { [name: string]: HelixChatBadgeSet } = {};
 
 	const addTwitchPubSubEvent = (messageName: string) => (data: PubSubEventMessage) => {
@@ -82,7 +72,8 @@ function Bundle(nodecg: NodeCG.ServerAPI) {
 		});
 	};
 
-	const twitchHello: NodeCG.ServerReplicant<TwitchHello[]> = nodecg.Replicant('twitchHello', {defaultValue: []});
+	// TODO Re-hook up the TwitchHEllo stuff
+	const twitchHello = getTwitchHelloReplicant(nodecg);
 	const twitchHelloIgnore: NodeCG.ServerReplicant<string[]> = nodecg.Replicant('twitchHelloIgnore', {defaultValue: []});
 
 	const checkHello = (message: any) => {
@@ -107,61 +98,6 @@ function Bundle(nodecg: NodeCG.ServerAPI) {
 		return badgeArray;
 	}
 
-	const manageTwitchChatMessages = (channel: string, user: string, message: string, msg: TwitchPrivateMessage) => {
-		if (channel === `#${twitchCredentials.value.connectedAs.name}`) {
-			if (twitchChat.value.length > 50) {
-				twitchChat.value.shift();
-			}
-			let savedMessage = {
-				...msg,
-				rawMessage: message,
-				username: msg.userInfo.displayName,
-				user_colour: msg.userInfo.color,
-				user_badges: getChatBadgeArray(msg.userInfo.badges),
-				parsedMessage: msg.parseEmotes(),
-				messageId: msg.id,
-				messageTime: new Date().getTime(),
-			}
-			// @ts-ignore we've got slightly more than ChatMessageData but shh
-			twitchChat.value.push(savedMessage);
-			checkHello(savedMessage);
-		}
-	};
-
-	const onTwitchDeleteChatMessage = (channel: string, messageId: string) => {
-		twitchChat.value = twitchChat.value.map((m: ChatMessageData) => {
-			if (m.messageId === messageId) {
-				m.parsedMessage = [
-					{
-						type: "text",
-						text: "__REDACTED__",
-						length: 12,
-						position: 0,
-					}
-				]
-				m.username = "USER PURGED"
-			}
-			return m;
-		});
-	};
-
-	const onChatUserTimeout = (channel: string, user: string) => {
-		twitchChat.value = twitchChat.value.map((m: ChatMessageData) => {
-			if (m.username === user) {
-				m.parsedMessage = [
-					{
-						type: "text",
-						text: "_ _ REDACTED _ _",
-						length: 12,
-						position: 0,
-					}
-				]
-				m.username = "USER PURGED"
-			}
-			return m;
-		});
-	};
-
 	const twitchSubs: NodeCG.ServerReplicant<{ username: string }[]> = nodecg.Replicant('twitchSubscribers', {defaultValue: []});
 	const twitchFollows: NodeCG.ServerReplicant<{ username: string }[]> = nodecg.Replicant('twitchFollowers', {defaultValue: []});
 
@@ -180,45 +116,12 @@ function Bundle(nodecg: NodeCG.ServerAPI) {
 	});
 
 	const onTwitchAuthSuccess = async () => {
-		const {clientId, clientSecret} = twitchCredentials.value;
-
-		const authProvider = new RefreshingAuthProvider(
-			{
-				clientId,
-				clientSecret,
-			},
-			twitchCredentials.value,
-		);
-		authProvider.onRefresh((userId, token) => {
-			nodecg.log.info('Refreshing Twitch Credentials');
-			twitchCredentials.value.accessToken = token.accessToken;
-			twitchCredentials.value.refreshToken = token.refreshToken;
-			twitchCredentials.value.expiresIn = token.expiresIn;
-			twitchCredentials.value.obtainmentTimestamp = token.obtainmentTimestamp;
-		});
-		twitchClient = new ApiClient({authProvider});
-		await twitchClient.users.getMe().then(r => {
-			twitchCredentials.value.connectedAs = {id: r.id, name: r.name};
-			twitchCredentials.value.isConnected = true;
-		});
-
 		twitchPubSubClient = new SingleUserPubSubClient({authProvider});
 		twitchPubSubListeners.onBits = await twitchPubSubClient.onBits(addTwitchPubSubEvent('bits'));
 		// Currently not used on frontend, will need to make custom event manager
 		// twitchPubSubListeners.onSubscription = await twitchPubSubClient.onSubscription(addTwitchPubSubEvent('subscription'));
 		twitchPubSubListeners.onRedemption = await twitchPubSubClient.onRedemption(addTwitchPubSubEvent('redemption'));
 		twitchPubSubListeners.onBitsBadgeUnlock = await twitchPubSubClient.onBitsBadgeUnlock(addTwitchPubSubEvent('bitsBadgeUnlock'));
-
-		twitchChatClient = new ChatClient({channels: [twitchCredentials.value.connectedAs.name]});
-
-		// twitchChatClient.onJoin((channel, user) => {
-		// 	nodecg.log.info(`Twitch Chat: Connected to ${channel} as ${user}`);
-		// });
-		twitchChatClientListeners.onMessage = twitchChatClient.onMessage(manageTwitchChatMessages);
-		twitchChatClientListeners.onAction = twitchChatClient.onAction(manageTwitchChatMessages);
-		twitchChatClientListeners.onDelete = twitchChatClient.onMessageRemove(onTwitchDeleteChatMessage);
-		twitchChatClientListeners.onTimeout = twitchChatClient.onTimeout(onChatUserTimeout);
-		await twitchChatClient.connect();
 
 		const globalBadges = await twitchClient.chat.getGlobalBadges();
 		const channelBadges = await twitchClient.chat.getChannelBadges(twitchCredentials.value.connectedAs);
@@ -234,15 +137,9 @@ function Bundle(nodecg: NodeCG.ServerAPI) {
 		twitchPubSubListeners.onSubscription = undefined;
 		twitchPubSubListeners.onRedemption = undefined;
 		twitchPubSubListeners.onBitsBadgeUnlock = undefined;
-		twitchCredentials.value.isConnected = false;
 		delete twitchCredentials.value.connectedAs;
 		twitchPubSubClient = undefined;
-		twitchClient = undefined;
 	}
-
-	const twitchAuthRouter = getTwitchAuthRouter(nodecg, twitchCredentials, onTwitchAuthSuccess);
-
-	nodecg.mount(`/${nodecg.bundleName}`, twitchAuthRouter);
 
 	nodecg.listenFor('logoutTwitch', onTwitchAuthLogout);
 	nodecg.listenFor('clearTwitchEvents', clearTwitchEvents);

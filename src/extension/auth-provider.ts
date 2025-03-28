@@ -5,7 +5,7 @@ import {getCallbackUrl} from "./router/twitch-auth";
 import {TwitchCredentialUser} from "./types-common";
 import {writeFileSync, readFileSync} from "fs";
 
-export function getAuthProvider(nodecg: BundleAPI): AuthProvider {
+export function getAuthProvider(nodecg: BundleAPI): RefreshingAuthProvider {
     const twitchCredentials: ReplicantTwitchCredentials = nodecg.Replicant(TWITCH_CREDENTIAL_REPLICANT);
 
     // Simplify token storage
