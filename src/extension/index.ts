@@ -13,13 +13,13 @@ import {BundleAPI} from "./types-server";
 import {getAuthProvider} from "./auth-provider";
 import {getTwitchCredentialReplicant} from "./replicants";
 import {getChatClient} from "./chat-client";
+import {getClipsManager} from "./clips-manager";
 
 function Bundle(nodecg: BundleAPI) {
 
     // Initialise Credentials Replicants
     const twitchCredentials = getTwitchCredentialReplicant(nodecg);
     const twitchEvents: NodeCG.ServerReplicant<TwitchEvent[]> = nodecg.Replicant('twitchEvents', {defaultValue: []});
-    const twitchClips: NodeCG.ServerReplicant<TwitchClip[]> = nodecg.Replicant('twitchClips', {defaultValue: []});
     nodecg.Replicant<{ [id: string]: TwitchClip }>('twitchSelectedClips', {defaultValue: {}});
 
     // Initialise Twitch API connection
@@ -39,6 +39,22 @@ function Bundle(nodecg: BundleAPI) {
     // Setup Twitch Chat integration
     getChatClient(nodecg);
 
+    // Setup Clips Manager
+    getClipsManager(nodecg, twitchClient);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     let twitchPubSubClient: SingleUserPubSubClient;
     let twitchPubSubListeners: TwitchPubSubListeners = {};
     let twitchChatBadges: { [name: string]: HelixChatBadgeSet } = {};
@@ -51,25 +67,6 @@ function Bundle(nodecg: BundleAPI) {
     };
     const clearTwitchEvents = () => {
         twitchEvents.value = []
-    };
-    const updateTwitchClips = () => {
-        if (!twitchCredentials.value.connectedAs)
-            return;
-
-        twitchClient.clips.getClipsForBroadcasterPaginated(twitchCredentials.value.connectedAs).getAll().then(clips => {
-            twitchClips.value = clips.sort((a, b) => b.creationDate.getTime() - a.creationDate.getTime()).map(clip => {
-                const {id, creatorDisplayName, title, creationDate} = clip;
-                const thumbnailUrl = clip.thumbnailUrl.replace("-preview-480x272.jpg", ".mp4");
-                // nodecg.log.info('Clips: ' + thumbnailUrl);
-                return {
-                    id,
-                    url: thumbnailUrl,
-                    creator_name: creatorDisplayName,
-                    title,
-                    created_at: creationDate.toISOString()
-                };
-            });
-        });
     };
 
     const getChatBadgeArray = (badgeMap: Map<string, string>) => {
@@ -118,8 +115,6 @@ function Bundle(nodecg: BundleAPI) {
 
         globalBadges.forEach(b => twitchChatBadges[b.id] = b);
         channelBadges.forEach(b => twitchChatBadges[b.id] = b);
-
-        updateTwitchClips();
     }
 
     const onTwitchAuthLogout = async () => {
@@ -127,13 +122,11 @@ function Bundle(nodecg: BundleAPI) {
         twitchPubSubListeners.onSubscription = undefined;
         twitchPubSubListeners.onRedemption = undefined;
         twitchPubSubListeners.onBitsBadgeUnlock = undefined;
-        delete twitchCredentials.value.connectedAs;
         twitchPubSubClient = undefined;
     }
 
     nodecg.listenFor('logoutTwitch', onTwitchAuthLogout);
     nodecg.listenFor('clearTwitchEvents', clearTwitchEvents);
-    nodecg.listenFor('updateTwitchClips', updateTwitchClips);
 
     if (twitchCredentials.value.isConnected) onTwitchAuthSuccess().then(() => nodecg.log.info('Reconnected to Twitch'));
 }

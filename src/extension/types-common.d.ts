@@ -30,3 +30,11 @@ export interface TwitchHello {
     username: string;
     firstMessageTimestamp: number;
 }
+
+export interface TwitchClip {
+    id: string;
+    url: string;
+    creator_name: string;
+    title: string;
+    created_at: string;
+}

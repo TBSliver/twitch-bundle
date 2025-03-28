@@ -1,12 +1,14 @@
 import {
     BundleAPI,
     ReplicantTwitchChat,
+    ReplicantTwitchClips,
     ReplicantTwitchCredentials,
     ReplicantTwitchHello,
     ReplicantTwitchHelloIgnore
 } from "./types-server";
 import {
     TWITCH_CHAT_REPLICANT,
+    TWITCH_CLIP_REPLICANT,
     TWITCH_CREDENTIAL_REPLICANT,
     TWITCH_HELLO_IGNORE_REPLICANT,
     TWITCH_HELLO_REPLICANT
@@ -39,4 +41,8 @@ export function getTwitchHelloReplicant(nodecg: BundleAPI): ReplicantTwitchHello
 
 export function getTwitchHelloIgnoreReplicant(nodecg: BundleAPI): ReplicantTwitchHelloIgnore {
     return nodecg.Replicant(TWITCH_HELLO_IGNORE_REPLICANT, {defaultValue: []})
+}
+
+export function getTwitchClipsReplicant(nodecg: BundleAPI): ReplicantTwitchClips {
+    return nodecg.Replicant(TWITCH_CLIP_REPLICANT, {defaultValue: []});
 }

@@ -70,11 +70,3 @@ export interface TwitchEvent {
 	messageName: string;
 	data: PubSubEventMessageContent;
 }
-
-export interface TwitchClip {
-	id: string;
-	url: string;
-	creator_name: string;
-	title: string;
-	created_at: string;
-}
