@@ -1,11 +1,12 @@
 import {BundleAPI} from "./types-server";
 import {ApiClient} from "@twurple/api";
-import {getTwitchClipsReplicant} from "./replicants";
+import {getTwitchClipsReplicant, getTwitchSelectedClipsReplicant} from "./replicants";
 import {TwitchClip} from "./types-common";
 import {UPDATE_TWITCH_CLIPS_MESSAGE} from "./constants";
 
 export function getClipsManager(nodecg: BundleAPI, twitchClient: ApiClient) {
     const twitchClips = getTwitchClipsReplicant(nodecg);
+    getTwitchSelectedClipsReplicant(nodecg);
 
     const updateTwitchClips = async () => {
         const newClipArray: TwitchClip[] = [];

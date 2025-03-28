@@ -38,3 +38,7 @@ export interface TwitchClip {
     title: string;
     created_at: string;
 }
+
+export interface TwitchSelectedClips {
+    [id: string]: TwitchClip
+}

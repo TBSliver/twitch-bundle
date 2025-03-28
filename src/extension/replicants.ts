@@ -4,14 +4,16 @@ import {
     ReplicantTwitchClips,
     ReplicantTwitchCredentials,
     ReplicantTwitchHello,
-    ReplicantTwitchHelloIgnore
+    ReplicantTwitchHelloIgnore,
+    ReplicantTwitchSelectedClips
 } from "./types-server";
 import {
     TWITCH_CHAT_REPLICANT,
-    TWITCH_CLIP_REPLICANT,
+    TWITCH_CLIPS_REPLICANT,
     TWITCH_CREDENTIAL_REPLICANT,
     TWITCH_HELLO_IGNORE_REPLICANT,
-    TWITCH_HELLO_REPLICANT
+    TWITCH_HELLO_REPLICANT,
+    TWITCH_SELECTED_CLIPS_REPLICANT
 } from "./constants";
 
 export function getTwitchCredentialReplicant(nodecg: BundleAPI): ReplicantTwitchCredentials {
@@ -44,5 +46,9 @@ export function getTwitchHelloIgnoreReplicant(nodecg: BundleAPI): ReplicantTwitc
 }
 
 export function getTwitchClipsReplicant(nodecg: BundleAPI): ReplicantTwitchClips {
-    return nodecg.Replicant(TWITCH_CLIP_REPLICANT, {defaultValue: []});
+    return nodecg.Replicant(TWITCH_CLIPS_REPLICANT, {defaultValue: []});
+}
+
+export function getTwitchSelectedClipsReplicant(nodecg: BundleAPI): ReplicantTwitchSelectedClips {
+    return nodecg.Replicant(TWITCH_SELECTED_CLIPS_REPLICANT, {defaultValue: {}});
 }

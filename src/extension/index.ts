@@ -2,7 +2,6 @@ import NodeCG from 'nodecg/types';
 import {getTwitchAuthRouter} from "./router/twitch-auth";
 import {
     PubSubEventMessage,
-    TwitchClip,
     TwitchEvent,
     TwitchPubSubListeners
 } from "./types";
@@ -20,7 +19,6 @@ function Bundle(nodecg: BundleAPI) {
     // Initialise Credentials Replicants
     const twitchCredentials = getTwitchCredentialReplicant(nodecg);
     const twitchEvents: NodeCG.ServerReplicant<TwitchEvent[]> = nodecg.Replicant('twitchEvents', {defaultValue: []});
-    nodecg.Replicant<{ [id: string]: TwitchClip }>('twitchSelectedClips', {defaultValue: {}});
 
     // Initialise Twitch API connection
     const authProvider = getAuthProvider(nodecg);
