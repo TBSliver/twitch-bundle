@@ -8,8 +8,8 @@ function App() {
 	const [myVideo, setMyVideo] = useState<string>();
 	const [myAuthor, setMyAuthor] = useState<string>();
 	const [myTitle, setMyTitle] = useState<string>();
-	const [videoReplicant] = useReplicant<TwitchClip[]>('twitchClips', []);
-	const [selectedClipsReplicant, setSelectedClipsReplicant] = useReplicant<{ [id: string]: TwitchClip }>('twitchSelectedClips', {});
+	const [videoReplicant] = useReplicant<TwitchClip[], TwitchClip[]>('twitchClips', {defaultValue: []});
+	const [selectedClipsReplicant, setSelectedClipsReplicant] = useReplicant<{ [id: string]: TwitchClip }, { [id: string]: TwitchClip }>('twitchSelectedClips', {});
 	const [showSelected, setShowSelected] = useState(false);
 	const videoRef = useRef<HTMLVideoElement>(null);
 	const prevUrl = useRef<string>(myVideo);

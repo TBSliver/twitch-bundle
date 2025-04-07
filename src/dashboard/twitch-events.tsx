@@ -142,7 +142,8 @@ function TwitchEvent({event}: TwitchEventProps) {
 }
 
 export function App() {
-    const [twitchEvents] = useReplicant<TwitchEvent[]>('twitchEvents', []);
+    // TODO shouldnt need to declare this twice? Jsonify in react-hooks screws with it
+    const [twitchEvents] = useReplicant<TwitchEvent[], TwitchEvent[]>('twitchEvents', {defaultValue: []});
     const [max, setMax] = useState(10);
 
     const handleClear = () => nodecg.sendMessage('clearTwitchEvents');
