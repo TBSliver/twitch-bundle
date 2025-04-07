@@ -2,7 +2,7 @@ import React, {useEffect, useRef, useState} from 'react';
 import {createRoot} from "react-dom/client";
 import './twitch-clips.css';
 import {useReplicant} from "use-nodecg";
-import {TwitchClip} from "../extension/types";
+import {TwitchClip} from "../extension/types-common";
 
 function App() {
 	const [myVideo, setMyVideo] = useState<string>();

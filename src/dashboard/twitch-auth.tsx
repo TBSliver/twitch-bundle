@@ -2,7 +2,7 @@ import React, {FormEvent, useEffect, useState} from 'react';
 import {createRoot} from "react-dom/client";
 import {useReplicant} from 'use-nodecg';
 import './twitch-auth.css';
-import {TwitchCredentials} from "../extension/types";
+import {TwitchCredentials} from "../extension/types-common";
 
 export function App() {
 	const [callbackUrl, setCallbackUrl] = useState('#');
