@@ -60,14 +60,16 @@ export interface V5CompatChannelRedemptionData {
             cost: number;
         }
         user_input: string;
-        timestamp: string;
     }
+    timestamp: string;
 }
 
 export interface V5CompatChannelCheerData {
     chat_message: string;
     bits_used: number;
     user_name: string;
+    time: string;
+    is_anonymous: boolean;
 }
 
 export type V5CompatData = V5CompatChannelRedemptionData | V5CompatChannelCheerData;
@@ -79,3 +81,13 @@ export interface TwitchEvent {
     messageName: string;
     data: V5CompatData;
 }
+
+export interface TwitchRedemptionEvent extends TwitchEvent {
+    data: V5CompatChannelRedemptionData;
+}
+
+export interface TwitchBitsEvent extends TwitchEvent {
+    data: V5CompatChannelCheerData
+}
+
+export type UnionTwitchEvent = TwitchEvent | TwitchRedemptionEvent | TwitchBitsEvent;

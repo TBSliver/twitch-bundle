@@ -33,8 +33,8 @@ export function getEventsManager(nodecg: BundleAPI, apiClient: ApiClient): Event
                     cost: data.rewardCost
                 },
                 user_input: data.input,
-                timestamp: dayjs(data.redemptionDate).toISOString(),
-            }
+            },
+            timestamp: dayjs(data.redemptionDate).toISOString(),
         };
         addEvent('redemption', data, pubSubData);
     }
@@ -45,6 +45,8 @@ export function getEventsManager(nodecg: BundleAPI, apiClient: ApiClient): Event
             chat_message: data.message,
             bits_used: data.bits,
             user_name: data.userName,
+            time: dayjs().toISOString(),
+            is_anonymous: data.isAnonymous,
         };
         addEvent('bits', data, pubSubData);
     }
