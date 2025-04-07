@@ -83,13 +83,13 @@
     "css-loader": "^7.1.2",
     "dayjs": "^1.11.13",
     "html-webpack-plugin": "^5.6.3",
+    "nodecg": "^2.5.3",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "style-loader": "^4.0.0",
     "ts-loader": "^9.5.2",
     "typescript": "^5.8.2",
     "use-nodecg": "^0.4.1-1",
-    "nodecg": "^2.5.3",
     "webpack": "^5.98.0",
     "webpack-cli": "^6.0.1",
     "webpack-node-externals": "^3.0.0"
@@ -98,6 +98,8 @@
     "@twurple/api": "^7.2.1",
     "@twurple/auth": "^7.2.1",
     "@twurple/chat": "^7.2.1",
+    "@twurple/eventsub-ws": "^7.2.1",
+    "@twurple/eventsub-base": "^7.2.1",
     "@twurple/pubsub": "^7.2.1",
     "urijs": "^1.19.11"
   }
