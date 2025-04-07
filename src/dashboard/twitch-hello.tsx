@@ -1,6 +1,6 @@
 import {createRoot} from "react-dom/client";
 import React, {ChangeEvent, useState} from "react";
-import {useReplicant} from "use-nodecg";
+import {useReplicant} from "@nodecg/react-hooks";
 import './twitch-hello.css';
 
 interface TwitchHello {

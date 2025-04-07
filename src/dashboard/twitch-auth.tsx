@@ -1,6 +1,6 @@
 import React, {FormEvent, useEffect, useState} from 'react';
 import {createRoot} from "react-dom/client";
-import {useReplicant} from 'use-nodecg';
+import {useReplicant} from '@nodecg/react-hooks';
 import './twitch-auth.css';
 import {TwitchCredentials} from "../extension/types-common";
 

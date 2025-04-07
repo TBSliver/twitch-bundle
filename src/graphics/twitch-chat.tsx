@@ -1,7 +1,7 @@
 import React from 'react';
 import {createRoot} from "react-dom/client";
 import './twitch-chat.css';
-import {useReplicant} from "use-nodecg";
+import {useReplicant} from "@nodecg/react-hooks";
 import {ParsedMessagePart} from '@twurple/common';
 
 interface ChatMessageData {

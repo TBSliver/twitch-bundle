@@ -1,7 +1,7 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {createRoot} from "react-dom/client";
 import './twitch-clips.css';
-import {useReplicant} from "use-nodecg";
+import {useReplicant} from "@nodecg/react-hooks";
 import {TwitchClip} from "../extension/types-common";
 
 function App() {

@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {createRoot} from "react-dom/client";
-import {useReplicant} from 'use-nodecg';
+import {useReplicant} from '@nodecg/react-hooks';
 import './twitch-events.css';
 import {DownChevronIcon, RefreshIcon} from "./components/icon";
 import dayjs from "dayjs";
