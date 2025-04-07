@@ -5,7 +5,8 @@ import {
     TwitchClip,
     TwitchCredentials,
     TwitchHello,
-    TwitchSelectedClips
+    TwitchSelectedClips,
+    TwitchEvent
 } from "./types-common";
 
 type ReplicantTwitchCredentials = NodeCG.ServerReplicant<TwitchCredentials>;
@@ -17,3 +18,4 @@ type ReplicantTwitchClips = NodeCG.ServerReplicant<TwitchClip[]>;
 type ReplicantTwitchSelectedClips = NodeCG.ServerReplicant<TwitchSelectedClips>;
 type ReplicantTwitchSubscribers = NodeCG.ServerReplicant<TwitchChannelMember[]>;
 type ReplicantTwitchFollowers = NodeCG.ServerReplicant<TwitchChannelMember[]>;
+type ReplicantTwitchEvents = NodeCG.ServerReplicant<TwitchEvent[]>;

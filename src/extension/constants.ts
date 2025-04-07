@@ -7,6 +7,7 @@ export const TWITCH_CLIPS_REPLICANT = 'twitchClips';
 export const TWITCH_SELECTED_CLIPS_REPLICANT = 'twitchSelectedClips';
 export const TWITCH_SUBSCRIBERS_REPLICANT = 'twitchSubscribers';
 export const TWITCH_FOLLOWERS_REPLICANT = 'twitchFollowers';
+export const TWITCH_EVENTS_REPLICANT = 'twitchEvents';
 
 // sendMessage and listenFor names
 export const UPDATE_TWITCH_CLIPS_MESSAGE = 'updateTwitchClips';

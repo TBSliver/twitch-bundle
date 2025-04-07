@@ -2,18 +2,23 @@ import {
     BundleAPI,
     ReplicantTwitchChat,
     ReplicantTwitchClips,
-    ReplicantTwitchCredentials, ReplicantTwitchFollowers,
+    ReplicantTwitchCredentials,
+    ReplicantTwitchEvents,
+    ReplicantTwitchFollowers,
     ReplicantTwitchHello,
     ReplicantTwitchHelloIgnore,
-    ReplicantTwitchSelectedClips, ReplicantTwitchSubscribers
+    ReplicantTwitchSelectedClips,
+    ReplicantTwitchSubscribers
 } from "./types-server";
 import {
     TWITCH_CHAT_REPLICANT,
     TWITCH_CLIPS_REPLICANT,
-    TWITCH_CREDENTIAL_REPLICANT, TWITCH_FOLLOWERS_REPLICANT,
+    TWITCH_CREDENTIAL_REPLICANT, TWITCH_EVENTS_REPLICANT,
+    TWITCH_FOLLOWERS_REPLICANT,
     TWITCH_HELLO_IGNORE_REPLICANT,
     TWITCH_HELLO_REPLICANT,
-    TWITCH_SELECTED_CLIPS_REPLICANT, TWITCH_SUBSCRIBERS_REPLICANT
+    TWITCH_SELECTED_CLIPS_REPLICANT,
+    TWITCH_SUBSCRIBERS_REPLICANT
 } from "./constants";
 
 export function getTwitchCredentialReplicant(nodecg: BundleAPI): ReplicantTwitchCredentials {
@@ -57,6 +62,11 @@ export function getTwitchSubsReplicant(nodecg: BundleAPI): ReplicantTwitchSubscr
     return nodecg.Replicant(TWITCH_SUBSCRIBERS_REPLICANT, {defaultValue: []});
 }
 
-export function getTwitchFollowersReplicant(nodecg:BundleAPI): ReplicantTwitchFollowers {
+export function getTwitchFollowersReplicant(nodecg: BundleAPI): ReplicantTwitchFollowers {
     return nodecg.Replicant(TWITCH_FOLLOWERS_REPLICANT, {defaultValue: []});
+}
+
+export function getTwitchEventsReplicant(nodecg: BundleAPI): ReplicantTwitchEvents {
+    return nodecg.Replicant(TWITCH_EVENTS_REPLICANT, {defaultValue: []});
+
 }

@@ -1,4 +1,5 @@
-import {ParsedMessagePart, ChatMessage} from "@twurple/chat";
+import {ParsedMessagePart} from "@twurple/chat";
+import {EventSubChannelCheerEvent, EventSubChannelRedemptionAddEvent} from "@twurple/eventsub-base";
 
 export interface BundleConfig {
     twitchClientId: string;
@@ -18,12 +19,12 @@ export interface TwitchCredentials {
 }
 
 export interface ChatMessageData {
-    username: string,
-    messageTime: number,
-    messageId: string,
-    user_colour: string,
-    user_badges: string[],
-    parsedMessage: ParsedMessagePart[],
+    username: string;
+    messageTime: number;
+    messageId: string;
+    user_colour: string;
+    user_badges: string[];
+    parsedMessage: ParsedMessagePart[];
 }
 
 export interface TwitchHello {
@@ -40,9 +41,41 @@ export interface TwitchClip {
 }
 
 export interface TwitchSelectedClips {
-    [id: string]: TwitchClip
+    [id: string]: TwitchClip;
 }
 
 export interface TwitchChannelMember {
-    username: string
+    username: string;
+}
+
+// twurple v5 Compatibility with original trigger data used in minions and droids
+export interface V5CompatChannelRedemptionData {
+    redemption: {
+        user: {
+            login: string;
+            display_name: string;
+        }
+        reward: {
+            title: string;
+            cost: number;
+        }
+        user_input: string;
+        timestamp: string;
+    }
+}
+
+export interface V5CompatChannelCheerData {
+    chat_message: string;
+    bits_used: number;
+    user_name: string;
+}
+
+export type V5CompatData = V5CompatChannelRedemptionData | V5CompatChannelCheerData;
+
+export type EventSubData = EventSubChannelRedemptionAddEvent | EventSubChannelCheerEvent;
+
+export interface TwitchEvent {
+    type: string;
+    messageName: string;
+    data: V5CompatData;
 }
