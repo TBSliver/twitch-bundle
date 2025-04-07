@@ -3,6 +3,7 @@ export const TWITCH_CREDENTIAL_REPLICANT = 'twitchCredentials';
 export const TWITCH_CHAT_REPLICANT = 'twitchChat';
 export const TWITCH_HELLO_REPLICANT = 'twitchHello';
 export const TWITCH_HELLO_IGNORE_REPLICANT = 'twitchHelloIgnore';
+export const TWITCH_HELLO_CLEAR_REPLICANT = 'twitchHelloClear';
 export const TWITCH_CLIPS_REPLICANT = 'twitchClips';
 export const TWITCH_SELECTED_CLIPS_REPLICANT = 'twitchSelectedClips';
 export const TWITCH_SUBSCRIBERS_REPLICANT = 'twitchSubscribers';
