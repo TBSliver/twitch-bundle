@@ -2,21 +2,20 @@ import React, {ChangeEvent, useState} from 'react';
 import {createRoot} from "react-dom/client";
 import './test-twitch.css';
 import {DownChevronIcon} from "./components/icon";
-import {PubSubBitsMessageContent} from "@twurple/pubsub/lib/Messages/PubSubBitsMessage";
-import {PubSubRedemptionMessageContent} from "@twurple/pubsub/lib/Messages/PubSubRedemptionMessage";
+import {V5CompatChannelCheerData, V5CompatChannelRedemptionData} from "../extension/types-common";
 
-const rawBitData: PubSubBitsMessageContent = {
+const rawBitData: V5CompatChannelCheerData = {
 	"user_name": "testUser",
-	"channel_name": "testChannel",
-	"user_id": "123456789",
-	"channel_id": "123456789",
+	// "channel_name": "testChannel",
+	// "user_id": "123456789",
+	// "channel_id": "123456789",
 	"time": "2021-04-02T00:00:00.000000000Z",
 	"chat_message": "Test Bit Message Cheer1",
 	"bits_used": 20,
-	"total_bits_used": 600,
+	// "total_bits_used": 600,
 	"is_anonymous": false,
-	"context": "cheer",
-	"badge_entitlement": null
+	// "context": "cheer",
+	// "badge_entitlement": null
 };
 
 function TestBits() {
@@ -62,43 +61,43 @@ function TestBits() {
 	)
 }
 
-const rawRedemptionData: PubSubRedemptionMessageContent = {
+const rawRedemptionData: V5CompatChannelRedemptionData = {
 	"timestamp": "2021-04-02T16:37:00.813078473Z",
 	"redemption": {
-		"id": "82edc824-930b-4d0d-b350-92ea360c6706",
+		// "id": "82edc824-930b-4d0d-b350-92ea360c6706",
 		"user": {
-			"id": "123456789",
+			// "id": "123456789",
 			"login": "testUser",
 			"display_name": "testUser"
 		},
-		"channel_id": "123456789",
-		"redeemed_at": "2021-04-02T16:37:00.813078473Z",
+		// "channel_id": "123456789",
+		// "redeemed_at": "2021-04-02T16:37:00.813078473Z",
 		"reward": {
-			"id": "1b09c741-3a39-43a1-8041-d15667234481",
-			"channel_id": "123456789",
+			// "id": "1b09c741-3a39-43a1-8041-d15667234481",
+			// "channel_id": "123456789",
 			"title": "Shout Out",
-			"prompt": "Write a name and I give that person a shout out",
+			// "prompt": "Write a name and I give that person a shout out",
 			"cost": 1200,
-			"is_user_input_required": true,
-			"is_sub_only": false,
-			"image": null,
-			"default_image": {
-				"url_1x": "https://static-cdn.jtvnw.net/custom-reward-images/default-1.png",
-				"url_2x": "https://static-cdn.jtvnw.net/custom-reward-images/default-2.png",
-				"url_4x": "https://static-cdn.jtvnw.net/custom-reward-images/default-4.png"
-			},
-			"background_color": "#FAFA19",
-			"is_enabled": true,
-			"is_paused": false,
-			"is_in_stock": true,
-			"max_per_stream": {
-				"is_enabled": false,
-				"max_per_stream": 1
-			},
-			"should_redemptions_skip_request_queue": false,
+			// "is_user_input_required": true,
+			// "is_sub_only": false,
+			// "image": null,
+			// "default_image": {
+			// 	"url_1x": "https://static-cdn.jtvnw.net/custom-reward-images/default-1.png",
+			// 	"url_2x": "https://static-cdn.jtvnw.net/custom-reward-images/default-2.png",
+			// 	"url_4x": "https://static-cdn.jtvnw.net/custom-reward-images/default-4.png"
+			// },
+			// "background_color": "#FAFA19",
+			// "is_enabled": true,
+			// "is_paused": false,
+			// "is_in_stock": true,
+			// "max_per_stream": {
+			// 	"is_enabled": false,
+			// 	"max_per_stream": 1
+			// },
+			// "should_redemptions_skip_request_queue": false,
 		},
 		"user_input": "me",
-		"status": "UNFULFILLED"
+		// "status": "UNFULFILLED"
 	}
 };
 
