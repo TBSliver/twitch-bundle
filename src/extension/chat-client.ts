@@ -15,7 +15,7 @@ export function getChatClient(nodecg: BundleAPI, twitchClient: ApiClient): ChatC
     // Collect global and channel badges
     const updateChatBadges = async () => {
         const globalBadges = await twitchClient.chat.getGlobalBadges();
-        const channelBadges = await twitchClient.chat.getChannelBadges(nodecg.bundleConfig.twitchChatChannel);
+        const channelBadges = await twitchClient.chat.getChannelBadges(nodecg.bundleConfig.twitchChannelId);
 
         globalBadges.forEach(b => twitchChatBadges[b.id] = b);
         channelBadges.forEach(b => twitchChatBadges[b.id] = b);

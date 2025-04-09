@@ -54,8 +54,8 @@ export function getEventsManager(nodecg: BundleAPI, apiClient: ApiClient): Event
     // https://twurple.js.org/versions/7.2/reference/eventsub-ws/classes/EventSubWsListener.html
     const listener = new EventSubWsListener({apiClient});
 
-    listener.onChannelRedemptionAdd(nodecg.bundleConfig.twitchChatChannel, handleChannelRedemptionAdd);
-    listener.onChannelCheer(nodecg.bundleConfig.twitchChatChannel, handleChannelCheer)
+    listener.onChannelRedemptionAdd(nodecg.bundleConfig.twitchChannelId, handleChannelRedemptionAdd);
+    listener.onChannelCheer(nodecg.bundleConfig.twitchChannelId, handleChannelCheer)
 
     listener.start();
 

@@ -20,6 +20,10 @@
     "twitchChatChannel": {
       "description": "Channel to connect to for chat",
       "type": "string"
+    },
+    "twitchChannelId": {
+      "description": "Channel ID to use for overlays",
+      "type": "string"
     }
   }
 }

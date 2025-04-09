@@ -6,6 +6,7 @@ export interface BundleConfig {
     twitchClientSecret: string;
     twitchTokenStore: string;
     twitchChatChannel: string;
+    twitchChannelId: string;
 }
 
 export interface TwitchCredentialUser {

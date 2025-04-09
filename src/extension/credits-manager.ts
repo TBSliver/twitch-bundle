@@ -14,7 +14,7 @@ export function getCreditsManager(nodecg: BundleAPI, twitchClient: ApiClient) {
 
         // get sub list
         const tempSubList: TwitchChannelMember[] = [];
-        const subResult = twitchClient.subscriptions.getSubscriptionsPaginated(nodecg.bundleConfig.twitchChatChannel);
+        const subResult = twitchClient.subscriptions.getSubscriptionsPaginated(nodecg.bundleConfig.twitchChannelId);
         for await (const sub of subResult) {
             if (sub.userName == nodecg.bundleConfig.twitchChatChannel)
                 continue;
@@ -24,7 +24,7 @@ export function getCreditsManager(nodecg: BundleAPI, twitchClient: ApiClient) {
 
         // get follower list
         const tempFollowList: TwitchChannelMember[] = [];
-        const followResult = twitchClient.channels.getChannelFollowersPaginated(nodecg.bundleConfig.twitchChatChannel);
+        const followResult = twitchClient.channels.getChannelFollowersPaginated(nodecg.bundleConfig.twitchChannelId);
         for await (const follow of followResult) {
             tempFollowList.push({username: follow.userDisplayName});
         }

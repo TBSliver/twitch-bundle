@@ -10,7 +10,7 @@ export function getClipsManager(nodecg: BundleAPI, twitchClient: ApiClient) {
 
     const updateTwitchClips = async () => {
         const newClipArray: TwitchClip[] = [];
-        const allClips = twitchClient.clips.getClipsForBroadcasterPaginated(nodecg.bundleConfig.twitchChatChannel);
+        const allClips = twitchClient.clips.getClipsForBroadcasterPaginated(nodecg.bundleConfig.twitchChannelId);
         for await (const clip of allClips) {
             newClipArray.push({
                 id: clip.id,
