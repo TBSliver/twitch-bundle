@@ -71,7 +71,9 @@ export function getTwitchAuthRouter(nodecg: BundleAPI, authProvider: RefreshingA
     // Receive redirect from twitch with code to swap out
     router.get('/callback', async (req: Request<{}, {}, {}, CallbackQueryParams>, res: Response) => {
         // Fail out early when not a known state
-        if (!checkState(req.query.state)) {
+        const check = checkState(req.query.state)
+        nodecg.log.info(`received callback state [${req.query.state}] ${check}`)
+        if (!check) {
             res.status(401).send('Unauthorised');
         } else {
             await authProvider.addUserForCode(req.query.code);
