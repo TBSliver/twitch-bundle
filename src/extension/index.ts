@@ -29,10 +29,10 @@ function Bundle(nodecg: BundleAPI) {
     getTwitchAuthRouter(nodecg, authProvider);
 
     // Setup Other integrations
-    // getChatClient(nodecg, twitchClient);
-    // getClipsManager(nodecg, twitchClient);
-    // getCreditsManager(nodecg, twitchClient);
-    // getEventsManager(nodecg, twitchClient);
+    getChatClient(nodecg, twitchClient);
+    getClipsManager(nodecg, twitchClient);
+    getCreditsManager(nodecg, twitchClient);
+    getEventsManager(nodecg, twitchClient);
 }
 
 // noinspection JSUnusedGlobalSymbols
