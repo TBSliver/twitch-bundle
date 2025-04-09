@@ -1,54 +1,42 @@
-import React, {FormEvent, useEffect, useState} from 'react';
+import React, {Fragment, useEffect, useState} from 'react';
 import {createRoot} from "react-dom/client";
 import {useReplicant} from '@nodecg/react-hooks';
 import './twitch-auth.css';
 import {TwitchCredentials} from "../extension/types-common";
 
 export function App() {
-	const [callbackUrl, setCallbackUrl] = useState('#');
-	const [authorizeUrl, setAuthorizeUrl] = useState('#');
+    const [callbackUrl, setCallbackUrl] = useState('#');
+    const [authorizeUrl, setAuthorizeUrl] = useState('#');
 
-	// Initialise just these two to stop react inputs complaining
-	const [twitchCredentials, setTwitchCredentials] = useReplicant<TwitchCredentials | any>('twitchCredentials', {
-		clientId: '',
-		clientSecret: '',
-	});
+    // Initialise just these two to stop react inputs complaining
+    const [twitchCredentials] = useReplicant<TwitchCredentials, TwitchCredentials>('twitchCredentials', {defaultValue: {}});
 
-	useEffect(() => {
-		console.log('getting urls');
-		nodecg.sendMessage('getAuthorizeUrl', (err, url: string) => setAuthorizeUrl(url));
-		nodecg.sendMessage('getCallbackUrl', (err, url: string) => setCallbackUrl(url));
-	}, [nodecg]);
+    useEffect(() => {
+        console.log('getting urls');
+        nodecg.sendMessage('getAuthorizeUrl', (_err, url: string) => setAuthorizeUrl(url));
+        nodecg.sendMessage('getCallbackUrl', (_err, url: string) => setCallbackUrl(url));
+    }, [nodecg]);
 
-	const handleChange = (event: FormEvent<HTMLInputElement>) => {
-		setTwitchCredentials({...twitchCredentials, [event.currentTarget.name]: event.currentTarget.value});
-	}
+    // currently does nothing...
+    const handleLogout = () => nodecg.sendMessage('logoutTwitch');
+    const handleSignIn = () => window.open(authorizeUrl, "_blank", "scrollbar=yes,resizable=yes");
 
-	const handleLogout = () => nodecg.sendMessage('logoutTwitch');
-	const handleSignIn = () => window.open(authorizeUrl, "_blank", "scrollbar=yes,resizable=yes");
-
-	const isSignInDisabled = !(twitchCredentials.clientId.length > 0 && twitchCredentials.clientSecret.length > 0);
-
-	if (twitchCredentials.isConnected)
-		return <>
-			<span>Connected as {twitchCredentials.connectedAs.name}</span>
-			<button className="twitch" onClick={handleLogout}>Logout</button>
-		</>;
-
-	return (
-		<>
-			<a className="twitch" href="https://dev.twitch.tv/console/apps" target="_blank">Twitch Dev Console</a>
-			<label htmlFor="callback-url">Callback URL</label>
-			<textarea id="callback-url" value={callbackUrl} readOnly/>
-			<label htmlFor="client-id">Client ID</label>
-			<input id="client-id" onChange={handleChange} value={twitchCredentials.clientId} name="clientId"/>
-			<label htmlFor="client-secret">Client Secret</label>
-			<input id="client-secret" onChange={handleChange} value={twitchCredentials.clientSecret} name="clientSecret" type="password"/>
-			<button className="twitch" onClick={handleSignIn} disabled={isSignInDisabled}>Sign In</button>
-		</>
-	);
+    return (
+        <>
+            <a className="twitch" href="https://dev.twitch.tv/console/apps" target="_blank">Twitch Dev Console</a>
+            <label htmlFor="callback-url">Callback URL</label>
+            <textarea id="callback-url" value={callbackUrl} readOnly/>
+            <button className="twitch" onClick={handleSignIn}>Sign In</button>
+            {Object.entries(twitchCredentials).map(([id, cred]) => (
+				<Fragment key={id}>
+                    <label htmlFor="callback-url">{cred.name}</label>
+                    <button className="twitch" onClick={handleLogout}>Logout</button>
+                </Fragment>
+            ))}
+        </>
+    );
 }
 
 const rootElement = document.getElementById('app');
 const root = createRoot(rootElement);
-root.render(<App />);
+root.render(<App/>);
