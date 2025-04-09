@@ -75,7 +75,7 @@ export function getTwitchAuthRouter(nodecg: BundleAPI, authProvider: RefreshingA
             res.status(401).send('Unauthorised');
         } else {
             const token = await exchangeCode(nodecg.bundleConfig.twitchClientId, nodecg.bundleConfig.twitchClientSecret, req.query.code, getCallbackUrl(nodecg));
-            const data = await this.addUserForToken(token);
+            const data = await authProvider.addUserForToken(token);
             // const data = await authProvider.addUserForCode(req.query.code);
             nodecg.log.info(`addUserForCode returned [${data}]`)
             res.send('Success, you can now close this window!');
