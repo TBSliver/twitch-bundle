@@ -32,7 +32,7 @@ function checkState(state: string): boolean {
     let check = false;
 
     // Check if actually a valid state
-    if (auth_state[state] < Date.now())
+    if (auth_state[state] > Date.now())
         check = true;
 
     // Delete it because it's been used
