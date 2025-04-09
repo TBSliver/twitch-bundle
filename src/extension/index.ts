@@ -19,6 +19,7 @@ function Bundle(nodecg: BundleAPI) {
 
     // Also fetch the user id and set it up as needed
     authProvider.onRefresh((userId, _t) => {
+        nodecg.log.info("Refreshing Display Names");
         twitchClient.users.getUserById(userId).then(v => {
             twitchCredentials.value[userId].name = v.displayName
         })
