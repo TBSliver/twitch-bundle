@@ -91,7 +91,7 @@ export function getTwitchAuthRouter(nodecg: BundleAPI, authProvider: RefreshingA
 
 export function getCallbackUrl(nodecg: BundleAPI) {
     return new URI()
-        .protocol(nodecg.config.ssl?.enabled ? 'https' : 'http')
+        .protocol((nodecg.config.ssl?.enabled || nodecg.config.login.forceHttpsReturn) ? 'https' : 'http')
         .host(nodecg.config.baseURL)
         .path(`${nodecg.bundleName}/callback`)
         .toString();
@@ -99,7 +99,7 @@ export function getCallbackUrl(nodecg: BundleAPI) {
 
 export function getAuthorizeUrl(nodecg: BundleAPI) {
     return new URI()
-        .protocol(nodecg.config.ssl?.enabled ? 'https' : 'http')
+        .protocol((nodecg.config.ssl?.enabled || nodecg.config.login.forceHttpsReturn) ? 'https' : 'http')
         .host(nodecg.config.baseURL)
         .path(`${nodecg.bundleName}/authorize`)
         .toString();
