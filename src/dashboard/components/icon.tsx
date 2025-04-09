@@ -7,7 +7,7 @@ interface PreparedIcon {
 }
 
 interface IconProps extends PreparedIcon {
-	icon: React.SVGProps<SVGElement>;
+	icon: React.ReactElement;
 }
 
 export function Icon({icon, size = 24, style}: IconProps) {
