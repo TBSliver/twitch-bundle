@@ -13,6 +13,8 @@ export function getAuthProvider(nodecg: BundleAPI): RefreshingAuthProvider {
     const writeTokenFile = (userId: string, token: AccessToken) => writeFileSync(tokenFilePath(userId), JSON.stringify(token, null, 4), 'utf-8');
     const readTokenFile = (userId: string): AccessToken => JSON.parse(readFileSync(tokenFilePath(userId), 'utf-8'))
 
+    nodecg.log.info(`Tokens to be saved in ${tokenFilePath("example")}`)
+
     // Initialise provider
     const authProvider = new RefreshingAuthProvider({
         clientId: nodecg.bundleConfig.twitchClientId,
@@ -21,7 +23,7 @@ export function getAuthProvider(nodecg: BundleAPI): RefreshingAuthProvider {
     });
 
     // Store refresh tokens as needed
-    authProvider.onRefresh((userId, token) => {
+    authProvider.onRefresh(async (userId, token) => {
         nodecg.log.info(`Saving Twitch Credentials for ${userId}`);
         writeTokenFile(userId, token);
         twitchCredentials.value[userId].isConnected = true;
