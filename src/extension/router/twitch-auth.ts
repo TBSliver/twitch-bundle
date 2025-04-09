@@ -10,7 +10,7 @@ let auth_state: { [state: string]: number } = {};
 // Loop through and expire any state tokens
 function expireStates(): void {
     for (let state in auth_state)
-        if (auth_state[state] > Date.now())
+        if (auth_state[state] < Date.now())
             delete auth_state[state];
 }
 
