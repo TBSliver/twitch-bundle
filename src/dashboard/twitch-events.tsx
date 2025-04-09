@@ -152,7 +152,7 @@ export function App() {
 
     return (
         <>
-            {twitchEvents.slice(0, max).map((event, i) => (
+            {twitchEvents && twitchEvents.slice(0, max).map((event, i) => (
                 <TwitchEvent event={event} key={i}/>
             ))}
             <div className="action-buttons">
