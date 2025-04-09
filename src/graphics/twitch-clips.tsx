@@ -50,6 +50,8 @@ function App() {
 	// 	showNextVideo();
 	// }, [videoArray]);
 
+	if (!availableVideos) return (<></>)
+
 	return (
 		<>
 			<video width={'100%'} height={'100%'} autoPlay ref={videoRef} onEnded={videoOnEnded}>

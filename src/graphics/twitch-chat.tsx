@@ -31,6 +31,8 @@ function App() {
     const [twitchChat] = useReplicant<ChatMessageData[]>(TWITCH_CHAT_REPLICANT, {defaultValue: []});
     console.log(twitchChat);
 
+    if (!twitchChat) return (<></>)
+
     return (
         <>
             <div className={"chat-messages"}>
