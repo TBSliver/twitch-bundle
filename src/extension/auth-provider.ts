@@ -26,7 +26,10 @@ export function getAuthProvider(nodecg: BundleAPI): RefreshingAuthProvider {
     authProvider.onRefresh((userId, token) => {
         nodecg.log.info(`Saving Twitch Credentials for ${userId}`);
         writeTokenFile(userId, token);
-        twitchCredentials.value[userId].isConnected = true;
+        twitchCredentials.value[userId] = {
+            ...twitchCredentials.value[userId],
+            isConnected: true
+        };
         // explicitly don't touch intents here, that's managed elsewhere.
     });
 
