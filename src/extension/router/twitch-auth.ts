@@ -3,7 +3,7 @@ import {BundleAPI} from "../types-server";
 import NodeCG from "nodecg/types";
 import {randomBytes} from "crypto";
 import {Request, Response} from "express";
-import {RefreshingAuthProvider} from "@twurple/auth";
+import {exchangeCode, RefreshingAuthProvider} from "@twurple/auth";
 
 let auth_state: { [state: string]: number } = {};
 
@@ -74,7 +74,9 @@ export function getTwitchAuthRouter(nodecg: BundleAPI, authProvider: RefreshingA
         if (!checkState(req.query.state)) {
             res.status(401).send('Unauthorised');
         } else {
-            const data = await authProvider.addUserForCode(req.query.code);
+            const token = await exchangeCode(nodecg.bundleConfig.twitchClientId, nodecg.bundleConfig.twitchClientSecret, req.query.code, getCallbackUrl(nodecg));
+            const data = await this.addUserForToken(token);
+            // const data = await authProvider.addUserForCode(req.query.code);
             nodecg.log.info(`addUserForCode returned [${data}]`)
             res.send('Success, you can now close this window!');
         }

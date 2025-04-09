@@ -23,7 +23,7 @@ export function getAuthProvider(nodecg: BundleAPI): RefreshingAuthProvider {
     });
 
     // Store refresh tokens as needed
-    authProvider.onRefresh(async (userId, token) => {
+    authProvider.onRefresh((userId, token) => {
         nodecg.log.info(`Saving Twitch Credentials for ${userId}`);
         writeTokenFile(userId, token);
         twitchCredentials.value[userId].isConnected = true;
