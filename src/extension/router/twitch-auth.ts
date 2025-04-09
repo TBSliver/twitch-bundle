@@ -74,10 +74,9 @@ export function getTwitchAuthRouter(nodecg: BundleAPI, authProvider: RefreshingA
         if (!checkState(req.query.state)) {
             res.status(401).send('Unauthorised');
         } else {
-            const token = await exchangeCode(nodecg.bundleConfig.twitchClientId, nodecg.bundleConfig.twitchClientSecret, req.query.code, getCallbackUrl(nodecg));
-            const data = await authProvider.addUserForToken(token);
-            // const data = await authProvider.addUserForCode(req.query.code);
-            nodecg.log.info(`addUserForCode returned [${data}]`)
+            const userId = await authProvider.addUserForCode(req.query.code);
+            await authProvider.refreshAccessTokenForUser(userId);
+            nodecg.log.info(`addUserForCode returned [${userId}]`)
             res.send('Success, you can now close this window!');
         }
     });
