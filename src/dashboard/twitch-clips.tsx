@@ -42,6 +42,8 @@ function App() {
 	const showSelectedOnly = () => setShowSelected(p => !p);
 	const clipSorter = (a: TwitchClip, b: TwitchClip) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
 
+	if (!(videoReplicant && selectedClipsReplicant)) return (<><i>Loading</i></>)
+
 	return (
 		<>
 			<button onClick={refreshVideos}>Refresh Clips</button>

@@ -58,6 +58,8 @@ export function App() {
         setNewIgnore(e.target.value);
     }
 
+    if (!(twitchHello && twitchHelloIgnore)) return (<><i>Loading</i></>)
+
     return (
         <>
             {twitchHello.filter(helloFilter).map(hello => (

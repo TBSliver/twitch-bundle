@@ -21,6 +21,8 @@ export function App() {
     const handleLogout = () => nodecg.sendMessage('logoutTwitch');
     const handleSignIn = () => window.open(authorizeUrl, "_blank", "scrollbar=yes,resizable=yes");
 
+    if (!twitchCredentials) return (<><i>Loading</i></>)
+
     return (
         <>
             <a className="twitch" href="https://dev.twitch.tv/console/apps" target="_blank">Twitch Dev Console</a>
@@ -28,7 +30,7 @@ export function App() {
             <textarea id="callback-url" value={callbackUrl} readOnly/>
             <button className="twitch" onClick={handleSignIn}>Sign In</button>
             {Object.entries(twitchCredentials).map(([id, cred]) => (
-				<Fragment key={id}>
+                <Fragment key={id}>
                     <label htmlFor="callback-url">{cred.name}</label>
                     <button className="twitch" onClick={handleLogout}>Logout</button>
                 </Fragment>
