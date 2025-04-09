@@ -150,9 +150,11 @@ export function App() {
     const handleShowMore = () => setMax(val => val + 10);
     const handleShowLess = () => setMax(val => val > 11 ? val - 10 : val);
 
+    if (!twitchEvents) return (<><i>Loading</i></>)
+
     return (
         <>
-            {twitchEvents && twitchEvents.slice(0, max).map((event, i) => (
+            {twitchEvents.slice(0, max).map((event, i) => (
                 <TwitchEvent event={event} key={i}/>
             ))}
             <div className="action-buttons">
