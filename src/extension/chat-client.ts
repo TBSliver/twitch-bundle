@@ -44,7 +44,7 @@ export function getChatClient(nodecg: BundleAPI, twitchClient: ApiClient): ChatC
     const handleOnMessage = (channel: string, _user: string, _text: string, msg: ChatMessage) => {
         nodecg.log.info(channel, parseChatMessage(msg.text, msg.emoteOffsets));
         // Ignore anything but messages for our channel
-        if (channel === `#${nodecg.bundleConfig.twitchChatChannel}`) {
+        if (channel === nodecg.bundleConfig.twitchChatChannel) {
             nodecg.log.info("message from expected channel");
             // Only store 50 messages
             if (twitchChat.value.length > 50) {
