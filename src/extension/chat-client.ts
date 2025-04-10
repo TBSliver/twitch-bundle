@@ -42,11 +42,13 @@ export function getChatClient(nodecg: BundleAPI, twitchClient: ApiClient): ChatC
     const twitchChatClient = new ChatClient({channels: [nodecg.bundleConfig.twitchChatChannel]});
 
     const handleOnMessage = (channel: string, _user: string, _text: string, msg: ChatMessage) => {
-        nodecg.log.info(channel, parseChatMessage(msg.text, msg.emoteOffsets))
+        nodecg.log.info(channel, parseChatMessage(msg.text, msg.emoteOffsets));
         // Ignore anything but messages for our channel
         if (channel === `#${nodecg.bundleConfig.twitchChatChannel}`) {
+            nodecg.log.info("message from expected channel");
             // Only store 50 messages
             if (twitchChat.value.length > 50) {
+                nodecg.log.info("truncating saved messages");
                 twitchChat.value.shift();
             }
             // Build new object
@@ -58,17 +60,20 @@ export function getChatClient(nodecg: BundleAPI, twitchClient: ApiClient): ChatC
                 user_badges: getChatBadgeArray(msg.userInfo.badges),
                 parsedMessage: parseChatMessage(msg.text, msg.emoteOffsets)
             }
+            nodecg.log.info("saved message", savedMessage);
             twitchChat.value.push(savedMessage);
 
             // Twitch Hello Queue functionality
             // If they're in the ignore queue, skip the rest
             if (twitchHelloIgnore.value.includes(savedMessage.username)) return;
+            nodecg.log.info("not in ignore queue");
             // Check if user already in hello queue
             const userIndex = twitchHello.value.findIndex(e => e.username === savedMessage.username);
             // Skip if already in it
             if (userIndex >= 0) return;
+            nodecg.log.info("adding to hello queue");
             // Add to the hello queue
-            twitchHello.value.push({username: savedMessage.username, firstMessageTimestamp: savedMessage.messageTime})
+            twitchHello.value.push({username: savedMessage.username, firstMessageTimestamp: savedMessage.messageTime});
         }
     };
 
