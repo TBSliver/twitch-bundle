@@ -14,7 +14,8 @@ export function getClipsManager(nodecg: BundleAPI, twitchClient: ApiClient) {
         for await (const clip of allClips) {
             newClipArray.push({
                 id: clip.id,
-                url: clip.thumbnailUrl.replace("-preview-480x272.jpg", ".mp4"),
+                url: clip.url, //clip.thumbnailUrl.replace("-preview-480x272.jpg", ".mp4"),
+                embed_url: clip.embedUrl,
                 created_at: clip.creationDate.toISOString(),
                 creator_name: clip.creatorDisplayName,
                 title: clip.title

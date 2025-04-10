@@ -36,6 +36,7 @@ export interface TwitchHello {
 export interface TwitchClip {
     id: string;
     url: string;
+    embed_url: string;
     creator_name: string;
     title: string;
     created_at: string;
