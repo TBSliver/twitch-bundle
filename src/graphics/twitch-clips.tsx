@@ -2,15 +2,14 @@ import React, {useEffect, useRef, useState} from 'react';
 import {createRoot} from "react-dom/client";
 import './twitch-clips.css';
 import {useReplicant} from "@nodecg/react-hooks";
-import {TwitchClip} from "../extension/types-common";
+import {TWITCH_SELECTED_CLIPS_REPLICANT} from "../extension/constants";
+import NodeCG from "nodecg/types";
 
 function App() {
 	const [myVideo, setMyVideo] = useState<string>();
-	// const [myAuthor, setMyAuthor] = useState<string>();
-	// const [myTitle, setMyTitle] = useState<string>();
 	const [videoArray, setVideoArray] = useState<string[]>([]);
 	const [arrayIndex, setArrayIndex] = useState(0);
-	const [availableVideos] = useReplicant<{ [id: string]: TwitchClip }>('twitchSelectedClips', {});
+	const [availableVideos] = useReplicant<{ [id: string]: NodeCG.AssetFile }>(TWITCH_SELECTED_CLIPS_REPLICANT, {defaultValue: {}});
 	const videoRef = useRef<HTMLVideoElement>(null);
 	const prevUrl = useRef<string>(myVideo);
 
@@ -44,12 +43,6 @@ function App() {
 		console.log("video index", arrayIndex, videoArray.length);
 	};
 
-	// // Trigger everything if nothings being shown
-	// useEffect(() => {
-	// 	if (prevUrl.current === undefined)
-	// 	showNextVideo();
-	// }, [videoArray]);
-
 	if (!availableVideos) return (<></>)
 
 	return (
@@ -58,10 +51,6 @@ function App() {
 				<source src={myVideo} type={'video/mp4'}/>
 				Your browser does not support the video tag.
 			</video>
-			{/*<div className={"titles"}>*/}
-			{/*	<div className={"title"}>{myTitle}</div>*/}
-			{/*	<div className={"author"}>{myAuthor}</div>*/}
-			{/*</div>*/}
 		</>
 	);
 }
