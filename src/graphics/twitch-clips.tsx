@@ -13,6 +13,8 @@ function App() {
 	const videoRef = useRef<HTMLVideoElement>(null);
 	const prevUrl = useRef<string>(myVideo);
 
+	if (!availableVideos) return (<></>);
+
 	useEffect(() => {
 		let video = videoArray[arrayIndex];
 		console.log("next video", video, videoArray);
@@ -43,7 +45,7 @@ function App() {
 		console.log("video index", arrayIndex, videoArray.length);
 	};
 
-	if (!availableVideos) return (<></>)
+
 
 	return (
 		<>
