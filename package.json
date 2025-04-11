@@ -69,6 +69,15 @@
         "width": 1920,
         "height": 1080
       }
+    ],
+    "assetCategories": [
+      {
+        "name": "clip-uploads",
+        "title": "Clip Uploads",
+        "allowedTypes": [
+          "mp4"
+        ]
+      }
     ]
   },
   "devDependencies": {
