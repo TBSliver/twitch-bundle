@@ -13,7 +13,7 @@ function App() {
 	const videoRef = useRef<HTMLVideoElement>(null);
 	const prevUrl = useRef<string>(myVideo);
 
-	if (!availableVideos) return (<></>);
+
 
 	useEffect(() => {
 		let video = videoArray[arrayIndex];
@@ -23,6 +23,7 @@ function App() {
 
 	// When availableVideos changes, regenerate the array
 	useEffect(() => {
+		if (availableVideos === undefined) return;
 		setVideoArray(Object.values(availableVideos).map(v => v.url).sort(() => Math.random() - 0.5));
 		setArrayIndex(0);
 	}, [availableVideos]);
@@ -34,7 +35,7 @@ function App() {
 		prevUrl.current = myVideo;
 	}, [myVideo]);
 
-	// Setup the video tag ref on ended as needed
+	// Set up the video tag ref on ended as needed
 	const videoOnEnded = () => {
 		setArrayIndex(p => {
 			p = p + 1;
@@ -45,7 +46,7 @@ function App() {
 		console.log("video index", arrayIndex, videoArray.length);
 	};
 
-
+	if (!availableVideos) return (<></>);
 
 	return (
 		<>
