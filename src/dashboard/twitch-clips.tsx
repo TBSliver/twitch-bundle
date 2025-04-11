@@ -51,7 +51,7 @@ function App() {
         } else {
             selectedClipsReplicant[video.name] = video;
         }
-        setSelectedClipsReplicant(selectedClipsReplicant);
+        setSelectedClipsReplicant({...selectedClipsReplicant});
     };
 
     const clipSorter = (a: NodeCG.AssetFile, b: NodeCG.AssetFile) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0);
