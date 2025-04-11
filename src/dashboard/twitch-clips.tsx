@@ -46,13 +46,12 @@ function App() {
     };
 
     const toggleSelect = (video: NodeCG.AssetFile) => () => {
-        setSelectedClipsReplicant(val => {
-            if (val[video.name]) {
-                delete val[video.name];
-            } else {
-                val[video.name] = video;
-            }
-        });
+        if (selectedClipsReplicant[video.name]) {
+            delete selectedClipsReplicant[video.name];
+        } else {
+            selectedClipsReplicant[video.name] = video;
+        }
+        setSelectedClipsReplicant(selectedClipsReplicant);
     };
 
     const clipSorter = (a: NodeCG.AssetFile, b: NodeCG.AssetFile) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0);
