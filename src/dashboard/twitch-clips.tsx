@@ -56,6 +56,8 @@ function App() {
 
     const clipSorter = (a: NodeCG.AssetFile, b: NodeCG.AssetFile) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0);
 
+    if (!clipUploads || !selectedClipsReplicant) return
+
     if (panelState === PANEL_STATE.PLAYLIST)
         return (
             <>
