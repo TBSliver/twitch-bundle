@@ -3,7 +3,7 @@ import {BundleAPI} from "../types-server";
 import NodeCG from "nodecg/types";
 import {randomBytes} from "crypto";
 import {Request, Response} from "express";
-import {exchangeCode, RefreshingAuthProvider} from "@twurple/auth";
+import {RefreshingAuthProvider} from "@twurple/auth";
 
 let auth_state: { [state: string]: number } = {};
 
