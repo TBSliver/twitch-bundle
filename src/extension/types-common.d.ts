@@ -26,6 +26,7 @@ export interface ChatMessageData {
     user_colour: string;
     user_badges: string[];
     parsedMessage: ParsedMessagePart[];
+    isAction: boolean;
 }
 
 export interface TwitchHello {

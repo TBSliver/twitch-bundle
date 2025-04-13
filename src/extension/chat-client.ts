@@ -51,6 +51,15 @@ export function getChatClient(nodecg: BundleAPI, twitchClient: ApiClient): ChatC
                 nodecg.log.info("truncating saved messages");
                 twitchChat.value.shift();
             }
+            // Handle Actions - an action starts with `\x01ACTION ` and ends with `\x01`
+            let isAction = false;
+            let rawMessage = msg.text;
+            if (msg.text.startsWith('\x01ACTION ')) {
+                isAction = true;
+                // Remove first 8 and last characters, gets rid of the binary stuff and action wrappers
+                rawMessage = msg.text.slice(8,msg.text.length - 1);
+            }
+            // We need to trim those
             // Build new object
             const savedMessage: ChatMessageData = {
                 messageId: msg.id,
@@ -58,7 +67,8 @@ export function getChatClient(nodecg: BundleAPI, twitchClient: ApiClient): ChatC
                 messageTime: msg.date.getTime(),
                 user_colour: msg.userInfo.color,
                 user_badges: getChatBadgeArray(msg.userInfo.badges),
-                parsedMessage: parseChatMessage(msg.text, msg.emoteOffsets)
+                parsedMessage: parseChatMessage(rawMessage, msg.emoteOffsets),
+                isAction: isAction,
             }
             nodecg.log.info("saved message", savedMessage);
             twitchChat.value.push(savedMessage);
