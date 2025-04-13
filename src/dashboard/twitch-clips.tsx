@@ -8,7 +8,6 @@ import NodeCG from "nodecg/types";
 enum PANEL_STATE {
     PLAYLIST,
     AVAILABLE,
-    DETAILS,
 }
 
 function App() {
@@ -20,6 +19,7 @@ function App() {
     const [myVideo, setMyVideo] = useState<string>();
     const videoRef = useRef<HTMLVideoElement>(null);
     const prevUrl = useRef<string>(myVideo);
+    const [showPreview, setShowPreview] = useState<boolean>(false);
 
     useEffect(() => {
         if (prevUrl.current === myVideo) return;
@@ -35,10 +35,21 @@ function App() {
             <button onClick={() => setPanelState(PANEL_STATE.AVAILABLE)}
                     disabled={panelState === PANEL_STATE.AVAILABLE}>Available
             </button>
-            <button onClick={() => setPanelState(PANEL_STATE.DETAILS)}
-                    disabled={panelState === PANEL_STATE.DETAILS}>Details
+            <button onClick={() => setShowPreview(v => !v)}>
+                {showPreview ? "Hide Preview" : "Show Preview"}
             </button>
         </>
+    }
+
+    const PreviewBox = () => {
+        return showPreview ? (
+            <div className={"video-wrapper"}>
+                <video width={'530px'} height={'298px'} autoPlay ref={videoRef} controls>
+                    <source src={myVideo} type={'video/mp4'}/>
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+        ) : (<></>)
     }
 
     const showVideo = (video: NodeCG.AssetFile) => () => {
@@ -70,12 +81,7 @@ function App() {
                                            showVideo={showVideo(clip)} toggleSelect={toggleSelect(clip)}/>
                     ))}
                 </div>
-                <div className={"video-wrapper"}>
-                    <video width={'530px'} height={'298px'} autoPlay ref={videoRef} controls>
-                        <source src={myVideo} type={'video/mp4'}/>
-                        Your browser does not support the video tag.
-                    </video>
-                </div>
+                <PreviewBox/>
             </>
         );
 
@@ -91,20 +97,7 @@ function App() {
                                            showVideo={showVideo(clip)} toggleSelect={toggleSelect(clip)}/>
                     ))}
                 </div>
-                <div className={"video-wrapper"}>
-                    <video width={'530px'} height={'298px'} autoPlay ref={videoRef} controls>
-                        <source src={myVideo} type={'video/mp4'}/>
-                        Your browser does not support the video tag.
-                    </video>
-                </div>
-            </>
-        );
-
-    if (panelState === PANEL_STATE.DETAILS)
-        return (
-            <>
-                <PanelSwitch/>
-                <p>Details</p>
+                <PreviewBox/>
             </>
         );
 
