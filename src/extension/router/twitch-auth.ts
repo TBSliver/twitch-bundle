@@ -62,7 +62,7 @@ export function getTwitchAuthRouter(nodecg: BundleAPI, authProvider: RefreshingA
             .addSearch("redirect_uri", getCallbackUrl(nodecg))
             .addSearch("response_type", "code")
             .addSearch("force_verify", "true")
-            .addSearch("scope", "channel:read:subscriptions bits:read channel:read:redemptions channel_subscriptions chat:read chat:edit")
+            .addSearch("scope", "channel:read:subscriptions bits:read channel:read:redemptions channel_subscriptions chat:read chat:edit moderator:read:followers")
             .addSearch("state", addState());
 
         res.redirect(uri.toString());
