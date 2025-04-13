@@ -48,7 +48,7 @@ function App() {
     const toggleSelect = (video: NodeCG.AssetFile) => () => {
         setSelectedClipsReplicant(val => {
             if (val[video.name]) {
-                delete val[video.name];
+                val[video.name] = undefined;
             } else {
                 val[video.name] = video;
             }
